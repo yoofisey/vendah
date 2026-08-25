@@ -1,0 +1,2 @@
+ALTER TABLE products ADD COLUMN sku TEXT;
+ALTER TABLE products ADD COLUMN weight_grams INTEGER;

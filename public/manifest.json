@@ -1,0 +1,13 @@
+{
+  "name": "Vendah",
+  "short_name": "Vendah",
+  "description": "Shop local on Vendah",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f0",
+  "theme_color": "#1b4332",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
