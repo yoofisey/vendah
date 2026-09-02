@@ -17,6 +17,7 @@ const PAYMENT_METHODS = [
   { id: "vodafone", name: "Vodafone Cash" },
   { id: "airteltigo", name: "AirtelTigo Money" },
   { id: "card", name: "Card" },
+  { id: "cod", name: "Cash on Delivery" },
 ];
 
 export type SavedAddress = {
@@ -70,7 +71,9 @@ export function CheckoutForm({
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const notesEditedRef = useRef(false);
-  const isMomo = method !== "card";
+  const isMomo =
+    method === "mtn" || method === "vodafone" || method === "airteltigo";
+  const isCod = method === "cod";
 
   useEffect(() => {
     if (state.redirectUrl) {
@@ -384,7 +387,13 @@ export function CheckoutForm({
             disabled={pending}
             className="w-full rounded-lg bg-brand-accent px-6 py-3.5 text-sm font-semibold text-white transition duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {pending ? "Starting payment…" : `Pay ${formatMoney(total)}`}
+            {pending
+              ? isCod
+                ? "Placing order…"
+                : "Starting payment…"
+              : isCod
+                ? "Place order — pay on delivery"
+                : `Pay ${formatMoney(total)}`}
           </button>
         </>
       ) : (
@@ -402,7 +411,9 @@ export function CheckoutForm({
       )}
 
       <p className="text-center text-xs text-muted">
-        Payments are processed securely by Paystack.
+        {isCod
+          ? "No online payment needed — pay in cash when your order arrives."
+          : "Payments are processed securely by Paystack."}
       </p>
     </form>
   );

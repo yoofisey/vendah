@@ -45,9 +45,7 @@ export async function createShop(
   if (name.length < 2) return { error: "Enter your full name." };
   if (shopName.length < 2) return { error: "Enter your shop name." };
   if (!terms) return { error: "Accept the terms to continue." };
-  if (!primaryCategoryId) {
-    return { error: "Select at least one category for your shop." };
-  }
+  // Category is optional — defaults to "other" if none selected
 
   const subdomain = normalizeSubdomain(subdomainInput);
   if (!subdomain || !isValidSubdomain(subdomain)) {
@@ -67,16 +65,40 @@ export async function createShop(
 
   const admin = createAdminClient();
 
-  const validIds = allCategoryIds.length > 0 ? allCategoryIds : [primaryCategoryId];
-  const { data: categories } = await admin
+  let validIds = allCategoryIds.length > 0 ? allCategoryIds : primaryCategoryId ? [primaryCategoryId] : [];
+  let { data: categories } = await admin
     .from("business_categories")
     .select("id, slug")
     .in("id", validIds)
     .eq("available", true);
   if (!categories || categories.length === 0) {
-    return { error: "Select a valid category for your shop." };
+    const { data: fallback } = await admin
+      .from("business_categories")
+      .select("id, slug")
+      .eq("slug", "other")
+      .eq("available", true)
+      .maybeSingle();
+    if (fallback) {
+      categories = [fallback];
+      validIds = [fallback.id];
+    } else {
+      const { data: any } = await admin
+        .from("business_categories")
+        .select("id, slug")
+        .eq("available", true)
+        .order("sort_order")
+        .limit(1)
+        .maybeSingle();
+      if (any) {
+        categories = [any];
+        validIds = [any.id];
+      } else {
+        return { error: "No categories available. Please try again." };
+      }
+    }
   }
-  const category = categories.find((c) => c.id === primaryCategoryId) ?? categories[0];
+  const category = categories!.find((c) => c.id === primaryCategoryId) ?? categories![0];
+  const resolvedCategoryId = category.id;
   const preset = getCategoryPreset(category.slug);
 
   const { data: taken } = await admin
@@ -126,7 +148,7 @@ export async function createShop(
       .from("tenants")
       .update({
         name: shopName,
-        business_category_id: primaryCategoryId,
+        business_category_id: resolvedCategoryId,
         business_category_ids: validIds,
         branding: {
           primaryColor: /^#[0-9a-fA-F]{6}$/.test(primaryColor)
@@ -146,7 +168,7 @@ export async function createShop(
         name: shopName,
         slug: subdomain,
         subdomain,
-        business_category_id: primaryCategoryId,
+        business_category_id: resolvedCategoryId,
         business_category_ids: validIds,
         status: "onboarding",
         subscription_tier: "free",

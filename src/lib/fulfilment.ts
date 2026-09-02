@@ -70,7 +70,11 @@ export async function sendOrderConfirmation(
     await sendEmail({
       to: order.customer_email,
       subject: `Your order ${orderRef(order.id)} from ${shopName} is confirmed`,
-      html: orderConfirmationHtml(shopName, emailOrder),
+      html: orderConfirmationHtml(
+        shopName,
+        emailOrder,
+        (order.payment_method as string | null) ?? null
+      ),
     });
   } catch (error) {
     console.error("[vendah:email] order confirmation failed", error);
@@ -106,7 +110,8 @@ export async function sendNewOrderNotificationToMerchant(
           email: order.customer_email,
           notes: (order.notes as string | null) ?? null,
         },
-        getDashboardUrl(`/orders/${order.id}`)
+        getDashboardUrl(`/orders/${order.id}`),
+        (order.payment_method as string | null) ?? null
       ),
     });
   } catch (error) {

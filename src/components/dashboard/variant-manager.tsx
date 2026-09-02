@@ -13,6 +13,12 @@ type Variant = {
   sort_order: number;
 };
 
+type Dimension = {
+  key: string;
+  label: string;
+  values: string;
+};
+
 type Props = {
   tenantId: string;
   productId: string;
@@ -20,6 +26,18 @@ type Props = {
   attributeDefs: { key: string; label: string; type: string; options?: string[] }[];
   onChange?: () => void;
 };
+
+function cartesianProduct<T>(arrays: T[][]): T[][] {
+  if (arrays.length === 0) return [];
+  return arrays.reduce<T[][]>(
+    (acc, curr) => acc.flatMap((combo) => curr.map((value) => [...combo, value])),
+    [[]]
+  );
+}
+
+function attrsKey(attributes: Record<string, string>): string {
+  return JSON.stringify(Object.entries(attributes).sort());
+}
 
 export function VariantManager({ tenantId, productId, variants: initial, attributeDefs, onChange }: Props) {
   const [variants, setVariants] = useState<Variant[]>(initial);
@@ -34,6 +52,104 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
     attributes: {},
   });
   const [showAddForm, setShowAddForm] = useState(false);
+
+  const [generatorOpen, setGeneratorOpen] = useState(false);
+  const [dimensions, setDimensions] = useState<Dimension[]>(() =>
+    (attributeDefs ?? [])
+      .filter((d) => d.type === "select")
+      .map((d) => ({
+        key: d.key,
+        label: d.label,
+        values: (d.options ?? []).join(", "),
+      }))
+  );
+  const [genStock, setGenStock] = useState<number>(0);
+  const [genPrice, setGenPrice] = useState<string>("");
+
+  function addDimension() {
+    setDimensions((prev) => [
+      ...prev,
+      { key: `dim${prev.length + 1}`, label: "", values: "" },
+    ]);
+  }
+
+  function updateDimension(index: number, patch: Partial<Dimension>) {
+    setDimensions((prev) =>
+      prev.map((d, i) => (i === index ? { ...d, ...patch } : d))
+    );
+  }
+
+  function removeDimension(index: number) {
+    setDimensions((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function applyMatrix() {
+    const cleaned = dimensions
+      .map((d) => ({
+        ...d,
+        label: d.label.trim(),
+        values: d.values
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean),
+      }))
+      .filter((d) => d.label && d.values.length > 0);
+
+    if (cleaned.length === 0) {
+      setError("Add at least one dimension with options to generate variants.");
+      return;
+    }
+
+    const combos = cartesianProduct(
+      cleaned.map((d) => d.values.map((v) => ({ dim: d, value: v })))
+    );
+
+    const price = genPrice ? Math.round(Number(genPrice) * 100) : null;
+
+    const generated: Variant[] = combos.map((combo, i) => {
+      const attributes: Record<string, string> = {};
+      const nameParts: string[] = [];
+      for (const { dim, value } of combo) {
+        attributes[dim.key] = value;
+        nameParts.push(value);
+      }
+      return {
+        name: nameParts.join(" / "),
+        sku: "",
+        price_override_minor: price,
+        stock: genStock,
+        attributes,
+        sort_order: variants.length + i,
+      };
+    });
+
+    if (generated.length === 0) return;
+
+    setVariants((prev) => {
+      const merged = [...prev];
+      for (const g of generated) {
+        const gKey = attrsKey(g.attributes);
+        const existingIndex = prev.findIndex((p) => {
+          if (!p.attributes || Object.keys(p.attributes).length === 0)
+            return false;
+          return attrsKey(p.attributes) === gKey;
+        });
+        if (existingIndex >= 0) {
+          merged[existingIndex] = {
+            ...merged[existingIndex],
+            ...g,
+            id: merged[existingIndex].id,
+          };
+        } else {
+          merged.push(g);
+        }
+      }
+      return merged;
+    });
+
+    setGeneratorOpen(false);
+    setError(null);
+  }
 
   function moveVariant(index: number, direction: "up" | "down") {
     setVariants((prev) => {
@@ -95,7 +211,12 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
   return (
     <section className="rounded-xl border border-white/70 bg-white p-7 shadow-[0_16px_40px_-24px_rgba(27,67,50,0.35)]">
       <div className="flex items-center justify-between">
-        <h2 className="font-heading text-lg font-semibold text-charcoal">Variants</h2>
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-charcoal">Variants</h2>
+          <p className="mt-0.5 text-xs text-muted">
+            e.g. shirt sizes and colours
+          </p>
+        </div>
         <div className="flex gap-2">
           {editing ? (
             <>
@@ -105,6 +226,7 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
                   setEditing(false);
                   setVariants(initial);
                   setShowAddForm(false);
+                  setGeneratorOpen(false);
                   setError(null);
                 }}
                 className="rounded-lg border border-charcoal/15 px-3 py-1.5 text-xs font-medium text-charcoal-soft transition hover:bg-cream"
@@ -271,13 +393,29 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
           ))}
 
           {!showAddForm ? (
-            <button
-              type="button"
-              onClick={() => setShowAddForm(true)}
-              className="rounded-lg border border-dashed border-charcoal/20 px-4 py-2 text-sm font-medium text-charcoal-soft transition hover:border-gold hover:text-gold"
-            >
-              + Add variant
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddForm(true);
+                  setGeneratorOpen(false);
+                }}
+                className="rounded-lg border border-dashed border-charcoal/20 px-4 py-2 text-sm font-medium text-charcoal-soft transition hover:border-gold hover:text-gold"
+              >
+                + Add variant
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setGeneratorOpen((v) => !v);
+                  setShowAddForm(false);
+                  setError(null);
+                }}
+                className="rounded-lg border border-dashed border-pine/40 px-4 py-2 text-sm font-medium text-pine transition hover:border-pine hover:bg-pine/5"
+              >
+                ⚡ Generate variants (colors × sizes)
+              </button>
+            </div>
           ) : (
             <div className="rounded-lg border border-gold/30 bg-gold/[0.03] p-4 space-y-3">
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4">
@@ -329,6 +467,123 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
                   type="button"
                   onClick={() => setShowAddForm(false)}
                   className="rounded-lg border border-charcoal/15 px-3 py-1.5 text-xs font-medium text-charcoal-soft transition hover:bg-cream"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {generatorOpen && (
+            <div className="rounded-lg border border-pine/30 bg-pine/[0.03] p-4 space-y-4">
+              <div>
+                <p className="text-sm font-semibold text-charcoal">
+                  Generate variant combinations
+                </p>
+                <p className="mt-0.5 text-xs text-muted">
+                  Enter options for each attribute and Vendah creates every
+                  combination (e.g. Red × S, Red × M, Blue × S…).
+                </p>
+              </div>
+
+              {dimensions.length === 0 && (
+                <p className="text-xs text-muted">
+                  No size/colour attributes found for this product&apos;s
+                  category. Add a dimension below.
+                </p>
+              )}
+
+              <div className="space-y-3">
+                {dimensions.map((dim, i) => (
+                  <div key={i} className="rounded-lg border border-charcoal/10 bg-white p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-medium text-charcoal-soft">
+                        Dimension {i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeDimension(i)}
+                        className="text-xs font-medium text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block text-xs text-muted">Label</label>
+                        <input
+                          value={dim.label}
+                          onChange={(e) => updateDimension(i, { label: e.target.value })}
+                          placeholder="e.g. Colour, Size"
+                          className="w-full rounded-lg border border-charcoal/15 px-2.5 py-1.5 text-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs text-muted">
+                          Options (comma-separated)
+                        </label>
+                        <input
+                          value={dim.values}
+                          onChange={(e) => updateDimension(i, { values: e.target.value })}
+                          placeholder="e.g. Red, Blue, Green"
+                          className="w-full rounded-lg border border-charcoal/15 px-2.5 py-1.5 text-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={addDimension}
+                className="rounded-lg border border-dashed border-charcoal/20 px-4 py-2 text-xs font-medium text-charcoal-soft transition hover:border-gold hover:text-gold"
+              >
+                + Add dimension
+              </button>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs text-muted">
+                    Default stock per variant
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={genStock}
+                    onChange={(e) => setGenStock(Number(e.target.value))}
+                    placeholder="e.g. 10"
+                    className="w-full rounded-lg border border-charcoal/15 px-2.5 py-1.5 text-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-muted">
+                    Price override per variant (GH₵, optional)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={genPrice}
+                    onChange={(e) => setGenPrice(e.target.value)}
+                    placeholder="e.g. 45.00"
+                    className="w-full rounded-lg border border-charcoal/15 px-2.5 py-1.5 text-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={applyMatrix}
+                  className="rounded-lg bg-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-pine-dark"
+                >
+                  Generate combinations
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGeneratorOpen(false)}
+                  className="rounded-lg border border-charcoal/15 px-4 py-2 text-xs font-medium text-charcoal-soft transition hover:bg-cream"
                 >
                   Cancel
                 </button>

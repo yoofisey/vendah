@@ -4,6 +4,7 @@ import { useEffect, useState, useActionState } from "react";
 import Image from "next/image";
 import {
   ArrowLeftIcon,
+  BanknotesIcon,
   CheckCircleIcon,
   CreditCardIcon,
   DevicePhoneMobileIcon,
@@ -51,6 +52,14 @@ const PAYMENT_METHODS = [
     note: "Visa, Mastercard, Verve",
     icon: <CreditCardIcon className="h-5 w-5" />,
   },
+  {
+    id: "cod",
+    name: "Cash on Delivery",
+    tag: "COD",
+    className: "bg-emerald-600 text-white",
+    note: "Pay in cash when your order arrives",
+    icon: <BanknotesIcon className="h-5 w-5" />,
+  },
 ];
 
 const inputClass =
@@ -76,7 +85,9 @@ export function CheckoutModal({
   const subtotal = cartTotalMinor(items);
   const deliveryFee = collection === "delivery" ? deliveryFeeMinor : 0;
   const total = subtotal + deliveryFee;
-  const isMomo = method !== "card";
+  const isMomo =
+    method === "mtn" || method === "vodafone" || method === "airteltigo";
+  const isCod = method === "cod";
   const cartJson = JSON.stringify(
     items.map((item) => ({ productId: item.productId, variantId: item.variantId ?? null, quantity: item.quantity }))
   );
@@ -485,15 +496,21 @@ export function CheckoutModal({
                   className="flex-1 rounded-lg bg-pine px-4 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {pending
-                    ? "Starting payment…"
-                    : `Pay ${formatMoney(total)} with ${
-                        PAYMENT_METHODS.find((m) => m.id === method)?.name ??
-                        "card"
-                      }`}                </button>
+                    ? isCod
+                      ? "Placing order…"
+                      : "Starting payment…"
+                    : isCod
+                      ? "Place order — pay on delivery"
+                      : `Pay ${formatMoney(total)} with ${
+                          PAYMENT_METHODS.find((m) => m.id === method)?.name ??
+                          "card"
+                        }`}                </button>
               )}
             </div>
             <p className="mt-3 text-center text-xs text-muted">
-              Payments are processed securely by Paystack.
+              {isCod
+                ? "No online payment needed — pay in cash when your order arrives."
+                : "Payments are processed securely by Paystack."}
             </p>
           </div>
         </form>

@@ -37,7 +37,7 @@ export function RouteTransitionSplash() {
         setMessage(msg);
         setShow(true);
         if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => setShow(false), 5000);
+        timer.current = setTimeout(() => setShow(false), 3500);
       }
       prevPath.current = pathname;
     }

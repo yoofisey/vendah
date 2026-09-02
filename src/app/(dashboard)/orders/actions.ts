@@ -24,9 +24,26 @@ export async function setOrderStatus(formData: FormData): Promise<void> {
   if (!tenant) return;
 
   const now = new Date().toISOString();
+  const updatePayload: Record<string, string> = {
+    status: status.data,
+    status_updated_at: now,
+  };
+
+  if (status.data === "paid") {
+    const { data: existing } = await admin
+      .from("orders")
+      .select("payment_method")
+      .eq("id", orderId)
+      .eq("tenant_id", tenant.id)
+      .maybeSingle();
+    if (existing?.payment_method === "cod") {
+      updatePayload.payment_collected_at = now;
+    }
+  }
+
   const { data: order } = await admin
     .from("orders")
-    .update({ status: status.data, status_updated_at: now })
+    .update(updatePayload)
     .eq("id", orderId)
     .eq("tenant_id", tenant.id)
     .select("*")

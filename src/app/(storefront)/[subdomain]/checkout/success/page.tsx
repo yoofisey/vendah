@@ -2,10 +2,54 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { ClearCart } from "@/components/cart/clear-cart";
+import { MomoPoll } from "@/components/checkout/momo-poll";
 import { formatMoney } from "@/lib/format";
 import { finalizePaidOrder } from "@/lib/orders";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+
+type CodOrder = {
+  id: string;
+  customer_name: string | null;
+  total_minor: number;
+  currency: string;
+};
+
+type CodItem = {
+  id: string;
+  product_name: string;
+  price_minor: number;
+  quantity: number;
+};
+
+type CodBundle = {
+  kind: "cod";
+  order: CodOrder;
+  items: CodItem[];
+};
+
+async function fetchCodOrder(
+  tenantId: string,
+  orderRef: string
+): Promise<CodBundle | null> {
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("orders")
+    .select("id, customer_name, total_minor, currency")
+    .eq("reference", orderRef)
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+  if (!order) return null;
+
+  const { data: items } = await admin
+    .from("order_items")
+    .select("id, product_name, price_minor, quantity")
+    .eq("order_id", order.id)
+    .order("id", { ascending: true });
+
+  return { kind: "cod", order, items: (items ?? []) as CodItem[] };
+}
 
 export default async function CheckoutSuccessPage({
   params,
@@ -15,13 +59,20 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { subdomain } = await params;
-  const { reference, order } = await searchParams;
+  const { reference, order, cod: codParam } = await searchParams;
   const tenant = await getTenantBySubdomain(subdomain);
   if (!tenant) notFound();
 
   const ref = typeof reference === "string" ? reference : null;
   const orderRef = typeof order === "string" ? order : null;
-  const result = ref ? await finalizePaidOrder(ref) : null;
+  const isCod = typeof codParam === "string" && codParam === "1";
+
+  const result = ref && !isCod ? await finalizePaidOrder(ref) : null;
+  const codBundle =
+    isCod && orderRef ? await fetchCodOrder(tenant.id, orderRef) : null;
+
+  const paidBundle = result?.ok ? result : codBundle;
+  const codPayment = codBundle !== null;
 
   const supabase = await createClient();
   const {
@@ -37,7 +88,7 @@ export default async function CheckoutSuccessPage({
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6">
       <ClearCart tenantId={tenant.id} />
-      {result?.ok ? (
+      {paidBundle ? (
         <div className="rounded-2xl border border-charcoal/10 bg-white p-10 text-center shadow-lg sm:p-12">
           <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
             <CheckCircleIcon className="h-9 w-9 text-emerald-600" />
@@ -46,12 +97,22 @@ export default async function CheckoutSuccessPage({
             Order received
           </h1>
           <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Thanks, {result.order.customer_name}! {tenant.name} has been
-            notified and will confirm your collection or delivery.
+            Thanks, {paidBundle.order.customer_name ?? "so much"}! {tenant.name}{" "}
+            has been notified and will confirm your collection or delivery.
           </p>
+          {codPayment && (
+            <p className="mx-auto mt-3 max-w-sm rounded-lg bg-gold/10 px-4 py-2.5 text-sm font-medium text-charcoal">
+              Please have{" "}
+              {formatMoney(
+                paidBundle.order.total_minor as number,
+                paidBundle.order.currency as string
+              )}{" "}
+              in cash ready when your order arrives.
+            </p>
+          )}
           <div className="mt-8 rounded-2xl bg-cream p-6 text-left">
             <ul className="divide-y divide-charcoal/10 text-sm">
-              {result.items.map((item) => (
+              {(paidBundle.items as CodItem[]).map((item) => (
                 <li key={item.id} className="flex justify-between gap-4 py-3">
                   <span className="text-charcoal-soft">
                     {item.product_name}{" "}
@@ -60,18 +121,20 @@ export default async function CheckoutSuccessPage({
                   <span className="font-semibold text-charcoal">
                     {formatMoney(
                       item.price_minor * item.quantity,
-                      result.order.currency as string
+                      paidBundle.order.currency as string
                     )}
                   </span>
                 </li>
               ))}
             </ul>
             <div className="mt-4 flex items-center justify-between border-t border-charcoal/10 pt-4">
-              <span className="text-sm text-muted">Total paid</span>
+              <span className="text-sm text-muted">
+                {codPayment ? "Total to pay on delivery" : "Total paid"}
+              </span>
               <span className="text-xl font-bold text-pine">
                 {formatMoney(
-                  result.order.total_minor as number,
-                  result.order.currency as string
+                  paidBundle.order.total_minor as number,
+                  paidBundle.order.currency as string
                 )}
               </span>
             </div>
@@ -109,34 +172,8 @@ export default async function CheckoutSuccessPage({
             )}
           </div>
         </div>
-      ) : momoPending ? (
-        <div className="rounded-2xl border border-charcoal/10 bg-white p-10 text-center shadow-lg sm:p-12">
-          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold/20">
-            <span className="h-6 w-6 animate-pulse rounded-full bg-gold" />
-          </span>
-          <h1 className="mt-5 font-heading text-3xl font-semibold text-charcoal">
-            Waiting for payment approval
-          </h1>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Your order is on hold until your mobile money network confirms the
-            payment. Check the prompt on your phone and approve it — we&apos;ll
-            email your confirmation the moment it clears.
-          </p>
-          {orderRef && (
-            <div className="mt-8 rounded-2xl bg-cream p-6">
-              <p className="text-xs text-muted">Order reference</p>
-              <p className="mt-0.5 font-mono text-base font-bold text-charcoal">
-                {orderRef}
-              </p>
-            </div>
-          )}
-          <Link
-            href={`/track?ref=${encodeURIComponent(orderRef ?? "")}`}
-            className="mt-8 inline-block rounded-lg bg-pine px-7 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
-          >
-            Track order
-          </Link>
-        </div>
+      ) : momoPending && ref ? (
+        <MomoPoll reference={ref} orderRef={orderRef} subdomain={subdomain} />
       ) : (
         <div className="rounded-2xl border border-charcoal/10 bg-white p-10 text-center shadow-lg sm:p-12">
           <h1 className="font-heading text-3xl font-semibold text-charcoal">

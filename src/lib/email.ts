@@ -74,8 +74,10 @@ export function merchantNewOrderHtml(
     email: string | null;
     notes: string | null;
   },
-  dashboardUrl: string
+  dashboardUrl: string,
+  paymentMethod?: string | null
 ): string {
+  const isCod = paymentMethod === "cod";
   const rows = order.items
     .map(
       (item) => `
@@ -94,11 +96,11 @@ export function merchantNewOrderHtml(
     <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:24px;">
       <h2 style="margin:0 0 4px;color:#111;">New order ${orderRef(order.id)}</h2>
       <p style="margin:0 0 20px;color:#666;font-size:14px;">
-        ${shopName} just received a paid order from ${customer.name}.
+        ${shopName} just received a ${isCod ? "new order" : "paid order"} from ${customer.name}.
       </p>
       <table style="width:100%;border-collapse:collapse;">${rows}</table>
       <p style="margin:16px 0 0;font-size:14px;">
-        <strong>Total paid:</strong> ${formatMoney(order.totalMinor, order.currency)}
+        <strong>Total ${isCod ? "to collect on delivery" : "paid"}:</strong> ${formatMoney(order.totalMinor, order.currency)}
       </p>
       <p style="margin:8px 0 0;color:#666;font-size:13px;">
         Collection: <strong style="text-transform:capitalize;">${order.deliveryMethod ?? "pickup"}</strong>
@@ -124,8 +126,10 @@ export function merchantNewOrderHtml(
 
 export function orderConfirmationHtml(
   shopName: string,
-  order: EmailOrder
+  order: EmailOrder,
+  paymentMethod?: string | null
 ): string {
+  const isCod = paymentMethod === "cod";
   const rows = order.items
     .map(
       (item) => `
@@ -150,6 +154,13 @@ export function orderConfirmationHtml(
       <p style="margin:16px 0 0;font-size:14px;">
         <strong>Total:</strong> ${formatMoney(order.totalMinor, order.currency)}
       </p>
+      ${
+        isCod
+          ? `<p style="margin:8px 0 0;color:#333;font-size:13px;">
+        Payment: <strong>cash on delivery</strong> — please have ${formatMoney(order.totalMinor, order.currency)} ready when your order arrives.
+      </p>`
+          : ""
+      }
       <p style="margin:8px 0 0;color:#666;font-size:13px;">
         Collection: <strong style="text-transform:capitalize;">${order.deliveryMethod ?? "pickup"}</strong>
       </p>

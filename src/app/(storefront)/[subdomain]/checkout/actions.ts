@@ -5,8 +5,13 @@ import { z } from "zod";
 import { initializePaystackCharge } from "@/lib/paystack";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStorefrontUrl } from "@/lib/tenant";
-import { validateDiscountCode } from "@/lib/discounts";
-import { sendOrderConfirmation } from "@/lib/order-emails";
+import { validateDiscountCode, incrementDiscountUsage } from "@/lib/discounts";
+import { sendLowStockAlert, LOW_STOCK_THRESHOLD } from "@/lib/low-stock-alerts";
+import {
+  sendNewOrderNotificationToMerchant,
+  sendOrderConfirmation,
+} from "@/lib/fulfilment";
+
 
 const cartItemSchema = z.object({
   productId: z.string().uuid(),
@@ -22,7 +27,7 @@ const checkoutSchema = z.object({
   phone: z.string().max(30),
   deliveryMethod: z.enum(["pickup", "delivery"]),
   notes: z.string().max(1000),
-  paymentMethod: z.enum(["card", "mtn", "vodafone", "airteltigo"]),
+  paymentMethod: z.enum(["card", "mtn", "vodafone", "airteltigo", "cod"]),
   momoPhone: z.string().trim().max(15).optional(),
   shippingZoneId: z.string().uuid().optional(),
 });
@@ -61,7 +66,11 @@ export async function submitCheckout(
   if (!parsed.success) return { error: "Please check the details you entered." };
   const data = parsed.data;
 
-  const isMomo = data.paymentMethod !== "card";
+  const isMomo =
+    data.paymentMethod === "mtn" ||
+    data.paymentMethod === "vodafone" ||
+    data.paymentMethod === "airteltigo";
+  const isCod = data.paymentMethod === "cod";
   if (isMomo && !/^0\d{9}$/.test(data.momoPhone ?? "")) {
     return { error: "Enter a valid 10-digit mobile money number." };
   }
@@ -80,7 +89,7 @@ export async function submitCheckout(
   if (!tenant.subdomain) {
     return { error: "This shop hasn't finished setting up." };
   }
-  if (!tenant.paystack_subaccount_code) {
+  if (!tenant.paystack_subaccount_code && !isCod) {
     return {
       error:
         "This shop isn't set up to take payments yet. Please try again later.",
@@ -213,8 +222,9 @@ export async function submitCheckout(
       notes: data.notes || null,
       discount_code: appliedDiscountCode,
       discount_minor: discountMinor,
+      payment_method: data.paymentMethod,
     })
-    .select("id")
+    .select("*")
     .single();
   if (!order) return { error: "Couldn't create your order. Try again." };
 
@@ -232,6 +242,54 @@ export async function submitCheckout(
     };
   });
   await admin.from("order_items").insert(orderItems);
+
+  if (isCod) {
+    // No online payment: reserve stock now, record collection on delivery,
+    // and notify both parties immediately.
+    try {
+      for (const c of data.cart) {
+        if (c.variantId) {
+          await admin.rpc("decrement_variant_stock", {
+            p_variant_id: c.variantId,
+            p_quantity: c.quantity,
+          });
+        } else {
+          await admin.rpc("decrement_stock", {
+            p_product_id: c.productId,
+            p_quantity: c.quantity,
+          });
+        }
+      }
+    } catch {
+      await admin.from("orders").delete().eq("id", order.id);
+      return { error: "Some items just went out of stock. Please try again." };
+    }
+
+    const { data: fresh } = await admin
+      .from("products")
+      .select("id, name, stock")
+      .in(
+        "id",
+        data.cart.map((c) => c.productId)
+      );
+    for (const product of fresh ?? []) {
+      if (Number(product.stock) <= LOW_STOCK_THRESHOLD) {
+        await sendLowStockAlert(tenant.id, product.name, Number(product.stock));
+      }
+    }
+    if (appliedDiscountCode) {
+      await incrementDiscountUsage(tenant.id, appliedDiscountCode);
+    }
+
+    await sendOrderConfirmation(order, orderItems);
+    await sendNewOrderNotificationToMerchant(order, orderItems);
+
+    return {
+      redirectUrl: `${getStorefrontUrl(
+        tenant.subdomain
+      )}/checkout/success?order=${orderReference}&cod=1`,
+    };
+  }
 
   const reference = `VH-${randomUUID()}`;
   const { data: transaction, error: txError } = await admin
@@ -283,32 +341,6 @@ export async function submitCheckout(
         },
       })
       .eq("id", transaction.id);
-    sendOrderConfirmation({
-      subdomain: tenant.subdomain,
-      shopName: tenant.name,
-      orderReference,
-      customerName: data.name,
-      customerEmail: data.email,
-      items: data.cart.map((c) => {
-        const product = byId.get(c.productId)!;
-        const variant = c.variantId ? variantMap.get(c.variantId) : null;
-        return {
-          name: product.name,
-          quantity: c.quantity,
-          priceMinor: variant?.price_override_minor ?? Number(product.price_minor),
-          currency: product.currency,
-        };
-      }),
-      subtotalMinor: subtotal,
-      deliveryFeeMinor,
-      taxMinor,
-      discountMinor,
-      totalMinor: total,
-      currency: "GHS",
-      deliveryMethod: data.deliveryMethod,
-      paymentMethod: data.paymentMethod,
-    }).catch(() => {});
-
     return { redirectUrl: init.authorization_url };
   } catch {
     await admin.from("transactions").delete().eq("order_id", order.id);

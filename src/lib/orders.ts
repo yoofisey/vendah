@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyPaystackTransaction } from "@/lib/paystack";
+import { incrementDiscountUsage } from "@/lib/discounts";
 import {
   sendNewOrderNotificationToMerchant,
   sendOrderConfirmation,
@@ -75,52 +76,46 @@ export async function settlePaidTransaction(
   if (!tx?.order_id) return { ok: false, reason: "not_found" };
 
   if (tx.status !== "success") {
-    const now = new Date().toISOString();
-    await admin
-      .from("transactions")
-      .update({ status: "success", payload: verification ?? {}, updated_at: now })
-      .eq("id", tx.id);
+    const { data: result, error } = await admin.rpc("settle_order", {
+      p_tx_id: tx.id,
+      p_payload: verification ?? {},
+    });
+    if (error) return { ok: false, reason: "error" };
 
-    const { data: order } = await admin
-      .from("orders")
-      .update({ status: "paid", updated_at: now })
-      .eq("id", tx.order_id)
-      .eq("status", "pending")
-      .select("id, tenant_id")
-      .maybeSingle();
+    const alreadySettled = (result as { already_settled?: boolean })?.already_settled;
+    if (!alreadySettled) {
+      const { data: order } = await admin
+        .from("orders")
+        .select("id, tenant_id, discount_code")
+        .eq("id", tx.order_id)
+        .maybeSingle();
 
-    if (order) {
-      const { data: items } = await admin
-        .from("order_items")
-        .select("product_id, quantity")
-        .eq("order_id", order.id);
-      for (const item of items ?? []) {
-        if (!item.product_id) continue;
-        const { data: product } = await admin
-          .from("products")
-          .select("stock, name")
-          .eq("id", item.product_id)
-          .maybeSingle();
-        if (product) {
-          const newStock = Math.max(0, product.stock - item.quantity);
-          await admin
+      if (order) {
+        const { data: items } = await admin
+          .from("order_items")
+          .select("product_id, quantity")
+          .eq("order_id", order.id);
+        for (const item of items ?? []) {
+          if (!item.product_id) continue;
+          const { data: product } = await admin
             .from("products")
-            .update({ stock: newStock })
-            .eq("id", item.product_id);
-          if (newStock <= LOW_STOCK_THRESHOLD) {
-            await sendLowStockAlert(
-              order.tenant_id,
-              product.name,
-              newStock
-            );
+            .select("stock, name")
+            .eq("id", item.product_id)
+            .maybeSingle();
+          if (product && product.stock <= LOW_STOCK_THRESHOLD) {
+            await sendLowStockAlert(order.tenant_id, product.name, product.stock);
           }
         }
-      }
 
-      const bundle = await fetchOrderBundle(order.id);
-      if (bundle) {
-        await sendOrderConfirmation(bundle.order, bundle.items);
-        await sendNewOrderNotificationToMerchant(bundle.order, bundle.items);
+        const bundle = await fetchOrderBundle(order.id);
+        if (bundle) {
+          await sendOrderConfirmation(bundle.order, bundle.items);
+          await sendNewOrderNotificationToMerchant(bundle.order, bundle.items);
+        }
+
+        if (order.discount_code) {
+          await incrementDiscountUsage(order.tenant_id, order.discount_code);
+        }
       }
     }
   }

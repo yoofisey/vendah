@@ -112,6 +112,24 @@ export async function deleteSection(id: string): Promise<void> {
   revalidatePath("/homepage");
 }
 
+export async function reorderSections(ids: string[]): Promise<{ error?: string }> {
+  await requireUser();
+  const tenant = await getCurrentTenant();
+  if (!tenant) return { error: "No store found." };
+
+  const admin = createAdminClient();
+  for (let i = 0; i < ids.length; i++) {
+    await admin
+      .from("homepage_sections")
+      .update({ sort_order: i, updated_at: new Date().toISOString() })
+      .eq("id", ids[i])
+      .eq("tenant_id", tenant.id);
+  }
+
+  revalidatePath("/homepage");
+  return {};
+}
+
 export async function toggleSectionActive(id: string, active: boolean): Promise<void> {
   await requireUser();
   const tenant = await getCurrentTenant();

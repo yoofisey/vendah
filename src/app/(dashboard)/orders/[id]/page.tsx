@@ -63,6 +63,7 @@ export default async function OrderDetailPage({
   const actionStatuses = ORDER_STATUSES.filter(
     (s) => s === next || (s === "cancelled" && canCancel)
   );
+  const isCod = order.payment_method === "cod";
 
   const deliveryFee =
     order.delivery_method === "delivery"
@@ -146,6 +147,23 @@ export default async function OrderDetailPage({
               {order.delivery_method ?? "pickup"}
             </dd>
           </div>
+          {isCod && (
+            <div>
+              <dt className="text-muted">Payment</dt>
+              <dd className="font-medium text-charcoal">
+                Cash on delivery
+                {order.payment_collected_at && (
+                  <span className="ml-1.5 text-xs text-pine">
+                    · collected{" "}
+                    {new Date(order.payment_collected_at).toLocaleString(
+                      undefined,
+                      { dateStyle: "medium", timeStyle: "short" }
+                    )}
+                  </span>
+                )}
+              </dd>
+            </div>
+          )}
           {order.customer_address && (
             <div className="sm:col-span-2">
               <dt className="text-muted">Address</dt>
@@ -250,7 +268,9 @@ export default async function OrderDetailPage({
                         : "bg-pine text-white shadow-md shadow-pine/20 hover:bg-pine-dark"
                     }`}
                   >
-                    {LABELS[statusOption]}
+                    {LABELS[statusOption] === "Mark paid" && isCod
+                      ? "Mark payment received"
+                      : LABELS[statusOption]}
                   </button>
                 </form>
               ))}

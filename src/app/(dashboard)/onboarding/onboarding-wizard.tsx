@@ -526,23 +526,34 @@ function PlanStep({ tenant }: { tenant: Tenant | null }) {
 
   return (
     <form action={action} className="relative space-y-7 overflow-hidden rounded-2xl border border-white/70 bg-white p-7 shadow-[0_16px_40px_-24px_rgba(27,67,50,0.35)] sm:p-9">
-      <div>
-        <span className="text-sm font-medium text-charcoal">Billing</span>
-        <div className="mt-2 inline-flex rounded-lg border border-charcoal/10 bg-cream p-1">
+      <div className="rounded-xl border border-charcoal/10 bg-cream/60 p-4 sm:p-5">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-charcoal">Billing cycle</span>
+          <p className="text-xs text-muted">
+            Choose monthly or save with annual billing.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex rounded-xl border border-charcoal/10 bg-white p-1 shadow-sm">
           {(["monthly", "annual"] as const).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setCycle(option)}
-              className={`rounded-md px-4 py-1.5 text-sm font-medium capitalize transition duration-150 ${
+              className={`rounded-lg px-5 py-2 text-sm font-medium capitalize transition duration-150 ${
                 cycle === option
-                  ? "bg-white text-charcoal shadow-sm"
+                  ? "bg-pine text-white shadow-sm"
                   : "text-muted hover:text-charcoal"
               }`}
             >
               {option}
               {option === "annual" && (
-                <span className="ml-1 text-xs font-semibold text-green-700">
+                <span
+                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                    cycle === option
+                      ? "bg-white/20 text-white"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
                   save ₵200
                 </span>
               )}
