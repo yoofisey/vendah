@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
-  ArrowTrendingUpIcon,
   BanknotesIcon,
-  CheckBadgeIcon,
+  CubeIcon,
+  ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 import { SignInForm } from "./sign-in-form";
 import { BrandPanel } from "@/components/auth/brand-panel";
@@ -10,24 +10,24 @@ import { VendahLogo } from "@/components/vendah-logo";
 
 const iconClass = "h-5 w-5";
 
-const stats = [
+const highlights = [
   {
-    label: "Active retailers",
-    value: "2,400+",
-    delta: "+18% this month",
-    icon: <ArrowTrendingUpIcon className={iconClass} />,
+    label: "Sell online in minutes",
+    value: "Storefront ready",
+    delta: "launch your shop today",
+    icon: <ShoppingBagIcon className={iconClass} />,
   },
   {
-    label: "Revenue processed",
-    value: "₵4.8M",
-    delta: "monthly GHS volume",
+    label: "Take payments in Ghana",
+    value: "Card · MoMo · COD",
+    delta: "no merchant fees to start",
     icon: <BanknotesIcon className={iconClass} />,
   },
   {
-    label: "Orders fulfilled",
-    value: "1,204",
-    delta: "today",
-    icon: <CheckBadgeIcon className={iconClass} />,
+    label: "Manage everything",
+    value: "Orders & products",
+    delta: "from one dashboard",
+    icon: <CubeIcon className={iconClass} />,
   },
 ];
 
@@ -38,8 +38,8 @@ export default function SignInPage() {
         eyebrow="Retailer sign in"
         title="Welcome back to your shop"
         subtitle="Storefront, orders and payouts — all in one calm place."
-        stats={stats}
-        footer="Join 2,400+ retailers already selling smarter"
+        stats={highlights}
+        footer="Sell with Vendah"
       />
 
       <section className="relative flex min-h-screen flex-col bg-cream px-5 py-8 sm:px-10 sm:py-12 lg:px-14">

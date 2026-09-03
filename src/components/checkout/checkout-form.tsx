@@ -61,6 +61,7 @@ export function CheckoutForm({
   const [method, setMethod] = useState("mtn");
   const [collection, setCollection] = useState<"pickup" | "delivery">("delivery");
   const [discountInput, setDiscountInput] = useState("");
+  const [giftCardInput, setGiftCardInput] = useState("");
   const [selectedZoneId, setSelectedZoneId] = useState(
     shippingZones.length > 0 ? shippingZones[0].id : ""
   );
@@ -364,6 +365,15 @@ export function CheckoutForm({
                   value={discountInput}
                   onChange={(e) => setDiscountInput(e.target.value.toUpperCase())}
                   placeholder="Discount code"
+                  className="flex-1 rounded-lg border border-charcoal/15 px-3 py-2 text-sm text-charcoal placeholder:text-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                />
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  name="giftCardCode"
+                  value={giftCardInput}
+                  onChange={(e) => setGiftCardInput(e.target.value.toUpperCase())}
+                  placeholder="Gift card code"
                   className="flex-1 rounded-lg border border-charcoal/15 px-3 py-2 text-sm text-charcoal placeholder:text-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
                 />
               </div>

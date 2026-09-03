@@ -6,6 +6,7 @@ import { initializePaystackCharge } from "@/lib/paystack";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStorefrontUrl } from "@/lib/tenant";
 import { validateDiscountCode, incrementDiscountUsage } from "@/lib/discounts";
+import { validateAndRedeemGiftCard } from "@/lib/gift-cards";
 import { sendLowStockAlert, LOW_STOCK_THRESHOLD } from "@/lib/low-stock-alerts";
 import {
   sendNewOrderNotificationToMerchant,
@@ -30,6 +31,7 @@ const checkoutSchema = z.object({
   paymentMethod: z.enum(["card", "mtn", "vodafone", "airteltigo", "cod"]),
   momoPhone: z.string().trim().max(15).optional(),
   shippingZoneId: z.string().uuid().optional(),
+  giftCardCode: z.string().trim().max(20).optional(),
 });
 
 const MOMO_PROVIDERS: Record<string, string> = {
@@ -62,6 +64,7 @@ export async function submitCheckout(
     paymentMethod: String(formData.get("paymentMethod") ?? ""),
     momoPhone: String(formData.get("momoPhone") ?? "").trim(),
     shippingZoneId: String(formData.get("shippingZoneId") ?? "").trim() || undefined,
+    giftCardCode: String(formData.get("giftCardCode") ?? "").trim() || undefined,
   });
   if (!parsed.success) return { error: "Please check the details you entered." };
   const data = parsed.data;
@@ -199,9 +202,34 @@ export async function submitCheckout(
     appliedDiscountCode = discountCodeRaw.toUpperCase().trim();
   }
 
-  const total = Math.max(0, subtotal + deliveryFeeMinor + taxMinor - discountMinor);
+  // Gift card redemption reduces the amount due after discount.
+  let giftCardMinor = 0;
+  let appliedGiftCardId: string | null = null;
+  const dueAfterDiscount = Math.max(
+    0,
+    subtotal + deliveryFeeMinor + taxMinor - discountMinor
+  );
+  if (data.giftCardCode) {
+    const gc = await validateAndRedeemGiftCard(
+      tenant.id,
+      data.giftCardCode,
+      dueAfterDiscount
+    );
+    if (!gc.valid) return { error: gc.error };
+    giftCardMinor = gc.appliedMinor;
+    appliedGiftCardId = gc.id;
+  }
+
+  const total = Math.max(0, dueAfterDiscount - giftCardMinor);
 
   const orderReference = `VH-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+  const rollbackGiftCard = async () => {
+    if (appliedGiftCardId) {
+      await admin.rpc("restore_gift_card", {
+        p_gift_card_id: appliedGiftCardId,
+      } as never);
+    }
+  };
   const { data: order } = await admin
     .from("orders")
     .insert({
@@ -222,11 +250,16 @@ export async function submitCheckout(
       notes: data.notes || null,
       discount_code: appliedDiscountCode,
       discount_minor: discountMinor,
+      gift_card_id: appliedGiftCardId,
+      gift_card_minor: giftCardMinor,
       payment_method: data.paymentMethod,
     })
     .select("*")
     .single();
-  if (!order) return { error: "Couldn't create your order. Try again." };
+  if (!order) {
+    await rollbackGiftCard();
+    return { error: "Couldn't create your order. Try again." };
+  }
 
   const orderItems = data.cart.map((c) => {
     const product = byId.get(c.productId)!;
@@ -262,6 +295,7 @@ export async function submitCheckout(
       }
     } catch {
       await admin.from("orders").delete().eq("id", order.id);
+      await rollbackGiftCard();
       return { error: "Some items just went out of stock. Please try again." };
     }
 
@@ -307,6 +341,7 @@ export async function submitCheckout(
     .single();
   if (txError || !transaction) {
     await admin.from("orders").delete().eq("id", order.id);
+    await rollbackGiftCard();
     return { error: "Couldn't start checkout. Try again." };
   }
 

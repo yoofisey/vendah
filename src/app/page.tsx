@@ -235,8 +235,8 @@ export default async function Home() {
               Ready to start selling?
             </h2>
             <p className="mt-4 text-base text-muted">
-              Join hundreds of Ghanaian retailers already using Vendah to grow
-              their business.
+              Open your shop in minutes and start taking orders — no merchant
+              fees to get going.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <AuthTrigger

@@ -7,11 +7,9 @@ import { VendahLogo } from "@/components/vendah-logo";
 const SPLASH_ROUTES: Record<string, string> = {
   "/sign-in": "Signing you in...",
   "/sign-up": "Opening your shop...",
-  "/onboarding": "Setting up your shop...",
-  "/dashboard": "Loading your dashboard...",
 };
 
-const COVERED_PREFIXES = ["/sign-in", "/sign-up", "/onboarding", "/dashboard"];
+const COVERED_PREFIXES = ["/sign-in", "/sign-up"];
 
 function getSplashMessage(pathname: string): string | null {
   if (SPLASH_ROUTES[pathname]) return SPLASH_ROUTES[pathname];
@@ -37,7 +35,7 @@ export function RouteTransitionSplash() {
         setMessage(msg);
         setShow(true);
         if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => setShow(false), 3500);
+        timer.current = setTimeout(() => setShow(false), 800);
       }
       prevPath.current = pathname;
     }
@@ -52,7 +50,7 @@ export function RouteTransitionSplash() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-cream">
+    <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-cream">
       <div className="flex flex-col items-center gap-6">
         <div className="animate-pulse">
           <VendahLogo />
