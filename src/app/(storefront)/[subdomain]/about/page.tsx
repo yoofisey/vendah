@@ -65,7 +65,7 @@ export default async function AboutPage({
       />
       <p className="mt-8 whitespace-pre-line text-base leading-relaxed text-charcoal-soft">
         {tenant.about_text?.trim() ||
-          `Welcome to ${tenant.name} — a ${preset.name} shop on vendah. We care about quality, honest prices and fast service, and we hope you love shopping with us. Check our delivery page for how we get your order to you.`}
+          `Welcome to ${tenant.name} — a ${preset.name} shop on venfii. We care about quality, honest prices and fast service, and we hope you love shopping with us. Check our delivery page for how we get your order to you.`}
       </p>
 
       <div className="mt-12 grid gap-5 sm:grid-cols-3">

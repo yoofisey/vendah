@@ -1,7 +1,7 @@
 {
-  "name": "Vendah",
-  "short_name": "Vendah",
-  "description": "Shop local on Vendah",
+  "name": "Venfii",
+  "short_name": "Venfii",
+  "description": "Shop local on Venfii",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fdf8f0",

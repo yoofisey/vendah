@@ -619,7 +619,7 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
                   <span className="truncate font-medium">
                     {normalized || "yourshopname"}
                   </span>
-                  <span className="text-muted">.vendah.com</span>
+                  <span className="text-muted">.venfii.com</span>
                 </span>
                 {normalized && (
                   <span className="shrink-0">

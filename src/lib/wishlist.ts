@@ -2,7 +2,7 @@
 
 import { syncWishlist } from "@/app/(storefront)/[subdomain]/wishlist/actions";
 
-const key = (tenantId: string) => `vendah:wishlist:${tenantId}`;
+const key = (tenantId: string) => `venfii:wishlist:${tenantId}`;
 
 const cache = new Map<string, string[]>();
 const listeners = new Map<string, Set<() => void>>();

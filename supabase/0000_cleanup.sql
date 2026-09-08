@@ -1,4 +1,4 @@
--- CLEANUP: Drop all Vendah objects
+-- CLEANUP: Drop all Venfii objects
 -- Safe to run multiple times
 
 -- Drop functions + their dependent policies in one shot

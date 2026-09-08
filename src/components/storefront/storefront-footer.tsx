@@ -19,7 +19,7 @@ export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
             {tenant.name}
           </p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
-            Shop smarter with vendah — your online storefront, delivered.
+            Shop smarter with venfii — your online storefront, delivered.
           </p>
           <div className="mt-5 flex items-center gap-2.5">
             <SocialPlaceholder label="Instagram" href="#">
@@ -160,7 +160,7 @@ export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
           © {year} {tenant.name}. All rights reserved.
         </p>
         <p className="mt-1">
-          Powered by <span className="font-semibold text-pine">Vendah</span>
+          Powered by <span className="font-semibold text-pine">Venfii</span>
         </p>
       </div>
     </footer>

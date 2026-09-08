@@ -1,4 +1,4 @@
--- Vendah: All migrations combined
+-- Venfii: All migrations combined
 -- Run this in Supabase SQL Editor
 
 -- ========== 0001_init.sql ==========

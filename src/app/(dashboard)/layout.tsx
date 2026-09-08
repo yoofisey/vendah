@@ -51,7 +51,7 @@ export default async function DashboardLayout({
                 <span className="h-2 w-2 rounded-full bg-gold" />
               </span>
               <span className="font-heading text-lg font-semibold tracking-tight text-charcoal">
-                vendah<span className="text-gold">.</span>
+                venfii<span className="text-gold">.</span>
               </span>
             </Link>
             <div className="flex items-center gap-4">

@@ -61,7 +61,7 @@ export function PWAInstallPrompt() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-charcoal">
-            Add Vendah to your Home Screen
+            Add Venfii to your Home Screen
           </p>
           <p className="mt-0.5 text-xs text-muted">
             Quick access to your favourite shop

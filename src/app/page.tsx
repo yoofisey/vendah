@@ -9,7 +9,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { getUser } from "@/lib/auth";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 import { PLANS } from "@/lib/plans";
 import { LandingSplash } from "@/components/landing-splash";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -107,7 +107,7 @@ export default async function Home() {
               <FeatureCard
                 icon={<Squares2X2Icon className="h-5 w-5" />}
                 title="Branded storefront"
-                description="Your own shop at yourname.vendah.com with custom logo, banner and colours."
+                description="Your own shop at yourname.venfii.com with custom logo, banner and colours."
               />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={100}>
@@ -252,13 +252,13 @@ export default async function Home() {
 
       <footer className="border-t border-charcoal/5 bg-white px-5 py-10 sm:px-8">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
-          <VendahLogo />
+          <VenfiiLogo />
           <p className="text-xs text-muted">
-            &copy; {new Date().getFullYear()} Vendah. All rights reserved.
+            &copy; {new Date().getFullYear()} Venfii. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-muted">
             <a
-              href="mailto:support@vendah.com"
+              href="mailto:support@venfii.com"
               className="hover:text-charcoal"
             >
               Support
@@ -281,7 +281,7 @@ function Navbar({ isLoggedIn }: { isLoggedIn: boolean }) {
     <header className="sticky top-0 z-30 border-b border-charcoal/5 bg-cream/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/">
-          <VendahLogo />
+          <VenfiiLogo />
         </Link>
         <div className="flex items-center gap-3">
           {isLoggedIn ? (
@@ -413,7 +413,7 @@ function PricingCard({
           muted={highlighted}
         />
         <PricingFeature
-          text={monthlyPrice === 0 ? "Powered by Vendah footer" : "No Vendah branding"}
+          text={monthlyPrice === 0 ? "Powered by Venfii footer" : "No Venfii branding"}
           muted={highlighted}
         />
       </div>

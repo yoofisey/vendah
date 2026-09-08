@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { SignInForm } from "@/app/(auth)/sign-in/sign-in-form";
 import { SignUpForm } from "@/app/(auth)/sign-up/sign-up-form";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 import type { BusinessCategory } from "@/lib/types";
 import {
   AUTH_OPEN_EVENT,
@@ -119,7 +119,7 @@ export function AuthSheet({
           >
             <ArrowLeftIcon className="h-4 w-4" />
           </button>
-          <VendahLogo />
+          <VenfiiLogo />
           <button
             type="button"
             onClick={close}

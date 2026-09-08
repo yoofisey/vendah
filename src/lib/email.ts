@@ -13,12 +13,12 @@ type SendEmailInput = {
  * console so fulfilment wiring is verifiable without a provider.
  *
  * To go live, add a RESEND_API_KEY (and an EMAIL_FROM address, e.g.
- * "Shop Name <no-reply@shop.vendah.com>") to .env — the Resend branch below
+ * "Shop Name <no-reply@shop.venfii.com>") to .env — the Resend branch below
  * takes over automatically and no other code changes are needed.
  */
 export async function sendEmail({ to, subject, html }: SendEmailInput): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "vendah <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM ?? "venfii <onboarding@resend.dev>";
 
   if (apiKey) {
     try {
@@ -31,17 +31,17 @@ export async function sendEmail({ to, subject, html }: SendEmailInput): Promise<
         body: JSON.stringify({ from, to: [to], subject, html }),
       });
       if (!response.ok) {
-        console.error(`[vendah:email] resend error ${response.status}: ${await response.text()}`);
+        console.error(`[venfii:email] resend error ${response.status}: ${await response.text()}`);
       }
       return;
     } catch (error) {
-      console.error("[vendah:email] resend request failed", error);
+      console.error("[venfii:email] resend request failed", error);
       return;
     }
   }
 
   console.log(
-    `[vendah:email] to=${to} subject="${subject}" (mock mode — set RESEND_API_KEY to send)`
+    `[venfii:email] to=${to} subject="${subject}" (mock mode — set RESEND_API_KEY to send)`
   );
   console.log(html);
 }

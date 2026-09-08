@@ -1,6 +1,6 @@
-# Vendah — Sell Smarter
+# Venfii — Sell Smarter
 
-Multi-tenant e-commerce platform for Ghanaian merchants. Each seller gets a branded storefront at `<shopname>.vendah.com` with a dashboard to manage products, orders, payments and customers.
+Multi-tenant e-commerce platform for Ghanaian merchants. Each seller gets a branded storefront at `<shopname>.venfii.com` with a dashboard to manage products, orders, payments and customers.
 
 ## Tech Stack
 
@@ -18,7 +18,7 @@ Multi-tenant e-commerce platform for Ghanaian merchants. Each seller gets a bran
 
 ```bash
 git clone <repo-url>
-cd vendah
+cd venfii
 npm install
 ```
 
@@ -49,7 +49,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
-| `NEXT_PUBLIC_APP_DOMAIN` | Apex domain (default: `vendah.com`) |
+| `NEXT_PUBLIC_APP_DOMAIN` | Apex domain (default: `venfii.com`) |
 | `NEXT_PUBLIC_SITE_URL` | Full site URL for auth redirects (e.g. `http://localhost:3000`) |
 | `PAYSTACK_SECRET_KEY` | Paystack secret key (server-side only) |
 | `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack public key |
@@ -74,7 +74,7 @@ supabase/
 
 ## Key Features
 
-- **Multi-tenant subdomain routing** — each shop gets `<subdomain>.vendah.com`
+- **Multi-tenant subdomain routing** — each shop gets `<subdomain>.venfii.com`
 - **Category-based theming** — 9 business verticals with unique color palettes
 - **Product management** — images, category-specific attributes, stock tracking
 - **Checkout** — Paystack card + mobile money (MTN, Vodafone, AirtelTigo)
@@ -87,4 +87,4 @@ supabase/
 
 Deploy to [Vercel](https://vercel.com) with the Supabase integration. Set all environment variables in the Vercel dashboard.
 
-For subdomain routing in production, configure a wildcard DNS record (`*.vendah.com`) pointing to your Vercel deployment.
+For subdomain routing in production, configure a wildcard DNS record (`*.venfii.com`) pointing to your Vercel deployment.

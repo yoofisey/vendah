@@ -7,6 +7,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getStorefrontUrl } from "@/lib/tenant";
 import { validateDiscountCode, incrementDiscountUsage } from "@/lib/discounts";
 import { validateAndRedeemGiftCard } from "@/lib/gift-cards";
+import {
+  getLoyaltySettings,
+  getMemberBalance,
+  validateAndRedeemPoints,
+} from "@/lib/loyalty";
 import { sendLowStockAlert, LOW_STOCK_THRESHOLD } from "@/lib/low-stock-alerts";
 import {
   sendNewOrderNotificationToMerchant,
@@ -32,6 +37,8 @@ const checkoutSchema = z.object({
   momoPhone: z.string().trim().max(15).optional(),
   shippingZoneId: z.string().uuid().optional(),
   giftCardCode: z.string().trim().max(20).optional(),
+  loyaltyEmail: z.string().email().max(200).optional().or(z.literal("")),
+  loyaltyPoints: z.number().int().min(0).optional().default(0),
 });
 
 const MOMO_PROVIDERS: Record<string, string> = {
@@ -65,6 +72,8 @@ export async function submitCheckout(
     momoPhone: String(formData.get("momoPhone") ?? "").trim(),
     shippingZoneId: String(formData.get("shippingZoneId") ?? "").trim() || undefined,
     giftCardCode: String(formData.get("giftCardCode") ?? "").trim() || undefined,
+    loyaltyEmail: String(formData.get("loyaltyEmail") ?? "").trim(),
+    loyaltyPoints: Number(formData.get("loyaltyPoints") ?? 0),
   });
   if (!parsed.success) return { error: "Please check the details you entered." };
   const data = parsed.data;
@@ -220,13 +229,55 @@ export async function submitCheckout(
     appliedGiftCardId = gc.id;
   }
 
-  const total = Math.max(0, dueAfterDiscount - giftCardMinor);
+  // Loyalty point redemption reduces the amount due further.
+  let loyaltyCreditMinor = 0;
+  let loyaltyPointsUsed = 0;
+  let loyaltyPointsToMinor = 0;
+  let loyaltyEmailUsed: string | null = null;
+  const afterGiftCard = Math.max(0, dueAfterDiscount - giftCardMinor);
+  if (data.loyaltyPoints > 0 && data.loyaltyEmail) {
+    const settings = await getLoyaltySettings(tenant.id);
+    if (!settings?.enabled) {
+      return { error: "Loyalty points aren't enabled for this shop." };
+    }
+    loyaltyPointsToMinor = settings.points_to_minor;
+    const balance = await getMemberBalance(tenant.id, data.loyaltyEmail);
+    if (data.loyaltyPoints > balance) {
+      return { error: "You don't have enough points for that redemption." };
+    }
+    loyaltyCreditMinor = Math.min(
+      afterGiftCard,
+      data.loyaltyPoints * settings.points_to_minor
+    );
+    loyaltyPointsUsed = Math.ceil(loyaltyCreditMinor / settings.points_to_minor);
+    loyaltyEmailUsed = data.loyaltyEmail.trim();
+    if (loyaltyCreditMinor < data.loyaltyPoints * settings.points_to_minor) {
+      // Cap points actually used to those covering the remaining total.
+      loyaltyPointsUsed = Math.max(
+        1,
+        Math.ceil(loyaltyCreditMinor / settings.points_to_minor)
+      );
+    }
+  }
+
+  const total = Math.max(0, afterGiftCard - loyaltyCreditMinor);
 
   const orderReference = `VH-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
   const rollbackGiftCard = async () => {
     if (appliedGiftCardId) {
       await admin.rpc("restore_gift_card", {
         p_gift_card_id: appliedGiftCardId,
+      } as never);
+    }
+  };
+  const rollbackLoyalty = async (orderId: string) => {
+    if (loyaltyEmailUsed && loyaltyPointsUsed > 0) {
+      await admin.rpc("refund_loyalty_points", {
+        p_tenant_id: tenant.id,
+        p_email: loyaltyEmailUsed,
+        p_points: loyaltyPointsUsed,
+        p_order_id: orderId,
+        p_reason: "checkout-refund",
       } as never);
     }
   };
@@ -252,6 +303,8 @@ export async function submitCheckout(
       discount_minor: discountMinor,
       gift_card_id: appliedGiftCardId,
       gift_card_minor: giftCardMinor,
+      loyalty_points_redeemed: loyaltyPointsUsed,
+      loyalty_credit_minor: loyaltyCreditMinor,
       payment_method: data.paymentMethod,
     })
     .select("*")
@@ -259,6 +312,32 @@ export async function submitCheckout(
   if (!order) {
     await rollbackGiftCard();
     return { error: "Couldn't create your order. Try again." };
+  }
+
+  // Actually consume the loyalty points for this order (peeked earlier). If the
+  // balance changed in the meantime and redemption fails, abort and restore gift
+  // card + points.
+  if (loyaltyPointsUsed > 0 && loyaltyEmailUsed && loyaltyPointsToMinor > 0) {
+    const redeemed = await validateAndRedeemPoints(
+      tenant.id,
+      loyaltyEmailUsed,
+      loyaltyPointsUsed,
+      order.id,
+      loyaltyPointsToMinor
+    );
+    if (!redeemed.valid) {
+      await admin.from("orders").delete().eq("id", order.id);
+      await rollbackGiftCard();
+      await rollbackLoyalty(order.id);
+      return { error: redeemed.error };
+    }
+    if (redeemed.creditMinor !== loyaltyCreditMinor) {
+      // Reconcile the recorded credit with what was actually applied.
+      await admin
+        .from("orders")
+        .update({ loyalty_credit_minor: redeemed.creditMinor })
+        .eq("id", order.id);
+    }
   }
 
   const orderItems = data.cart.map((c) => {
@@ -296,6 +375,7 @@ export async function submitCheckout(
     } catch {
       await admin.from("orders").delete().eq("id", order.id);
       await rollbackGiftCard();
+      await rollbackLoyalty(order.id);
       return { error: "Some items just went out of stock. Please try again." };
     }
 
@@ -342,6 +422,7 @@ export async function submitCheckout(
   if (txError || !transaction) {
     await admin.from("orders").delete().eq("id", order.id);
     await rollbackGiftCard();
+    await rollbackLoyalty(order.id);
     return { error: "Couldn't start checkout. Try again." };
   }
 

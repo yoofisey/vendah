@@ -425,12 +425,12 @@ function SubdomainStep({
             placeholder="yourshopname"
           />
           <span className="whitespace-nowrap bg-cream-soft px-3 py-2.5 text-sm text-muted">
-            .vendah.com
+            .venfii.com
           </span>
         </div>
         {value && (
           <p className="mt-2 text-xs text-muted">
-            Your store will be at <span className="font-medium text-charcoal">https://{normalizeSubdomain(value)}.vendah.com</span>
+            Your store will be at <span className="font-medium text-charcoal">https://{normalizeSubdomain(value)}.venfii.com</span>
           </p>
         )}
         {check.normalized && (
@@ -442,8 +442,8 @@ function SubdomainStep({
             {check.checking
               ? "Checking…"
               : check.available
-                ? `✓ ${check.normalized}.vendah.com is available`
-                : `✗ ${check.error ?? `${check.normalized}.vendah.com is taken`}`}
+                ? `✓ ${check.normalized}.venfii.com is available`
+                : `✗ ${check.error ?? `${check.normalized}.venfii.com is taken`}`}
           </p>
         )}
       </div>
@@ -481,7 +481,7 @@ function PlanStep({ tenant }: { tenant: Tenant | null }) {
       features: [
         "6% charge on sales",
         "Up to 20 products",
-        "Powered by vendah footer",
+        "Powered by venfii footer",
       ],
     },
     {

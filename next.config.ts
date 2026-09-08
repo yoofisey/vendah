@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG ?? "vendah",
-  project: process.env.SENTRY_PROJECT ?? "vendah",
+  org: process.env.SENTRY_ORG ?? "venfii",
+  project: process.env.SENTRY_PROJECT ?? "venfii",
   silent: !process.env.CI,
   widenClientFileUpload: true,
   sourcemaps: {

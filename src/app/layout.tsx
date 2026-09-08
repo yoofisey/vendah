@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "vendah — sell smarter",
+  title: "venfii — sell smarter",
   description:
     "Launch a branded storefront and sell on WhatsApp, Instagram and your business card.",
 };

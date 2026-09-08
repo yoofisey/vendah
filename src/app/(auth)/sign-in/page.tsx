@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { SignInForm } from "./sign-in-form";
 import { BrandPanel } from "@/components/auth/brand-panel";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 
 const iconClass = "h-5 w-5";
 
@@ -39,14 +39,14 @@ export default function SignInPage() {
         title="Welcome back to your shop"
         subtitle="Storefront, orders and payouts — all in one calm place."
         stats={highlights}
-        footer="Sell with Vendah"
+        footer="Sell with Venfii"
       />
 
       <section className="relative flex min-h-screen flex-col bg-cream px-5 py-8 sm:px-10 sm:py-12 lg:px-14">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gold lg:hidden" />
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-4 lg:py-10">
           <Link href="/" className="mb-8 w-fit lg:hidden">
-            <VendahLogo />
+            <VenfiiLogo />
           </Link>
 
           <div className="relative overflow-hidden rounded-2xl border border-charcoal/10 bg-white px-6 py-8 shadow-[0_24px_56px_-30px_rgba(27,67,50,0.42)] sm:px-10 sm:py-10">

@@ -36,17 +36,17 @@ export const RESERVED_SUBDOMAINS = new Set([
   "mail",
   "support",
   "status",
-  "vendah",
+  "venfii",
   "platform",
   "store",
   "shop",
 ]);
 
 export function getStorefrontUrl(subdomain: string): string {
-  return `https://${subdomain}.${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "vendah.com"}`;
+  return `https://${subdomain}.${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com"}`;
 }
 
 export function getDashboardUrl(path = ""): string {
-  const origin = `https://${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "vendah.com"}`;
+  const origin = `https://${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com"}`;
   return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
 }

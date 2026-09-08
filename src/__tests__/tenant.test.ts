@@ -87,7 +87,7 @@ describe("RESERVED_SUBDOMAINS", () => {
     expect(RESERVED_SUBDOMAINS.has("admin")).toBe(true);
     expect(RESERVED_SUBDOMAINS.has("api")).toBe(true);
     expect(RESERVED_SUBDOMAINS.has("dashboard")).toBe(true);
-    expect(RESERVED_SUBDOMAINS.has("vendah")).toBe(true);
+    expect(RESERVED_SUBDOMAINS.has("venfii")).toBe(true);
   });
 
   it("does not reserve normal shop names", () => {
@@ -98,20 +98,20 @@ describe("RESERVED_SUBDOMAINS", () => {
 
 describe("getStorefrontUrl", () => {
   it("builds URL with subdomain", () => {
-    expect(getStorefrontUrl("myshop")).toBe("https://myshop.vendah.com");
+    expect(getStorefrontUrl("myshop")).toBe("https://myshop.venfii.com");
   });
 });
 
 describe("getDashboardUrl", () => {
   it("builds base URL", () => {
-    expect(getDashboardUrl()).toBe("https://vendah.com/");
+    expect(getDashboardUrl()).toBe("https://venfii.com/");
   });
 
   it("appends path with leading slash", () => {
-    expect(getDashboardUrl("/orders")).toBe("https://vendah.com/orders");
+    expect(getDashboardUrl("/orders")).toBe("https://venfii.com/orders");
   });
 
   it("adds slash to path without leading slash", () => {
-    expect(getDashboardUrl("orders")).toBe("https://vendah.com/orders");
+    expect(getDashboardUrl("orders")).toBe("https://venfii.com/orders");
   });
 });

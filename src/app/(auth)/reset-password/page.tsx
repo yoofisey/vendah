@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BrandPanel } from "@/components/auth/brand-panel";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export default function ResetPasswordPage() {
@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gold lg:hidden" />
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-4 lg:py-10">
           <Link href="/" className="mb-8 w-fit lg:hidden">
-            <VendahLogo />
+            <VenfiiLogo />
           </Link>
 
           <div className="relative overflow-hidden rounded-2xl border border-charcoal/10 bg-white px-6 py-8 shadow-[0_24px_56px_-30px_rgba(27,67,50,0.42)] sm:px-10 sm:py-10">

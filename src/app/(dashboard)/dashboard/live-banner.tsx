@@ -11,7 +11,7 @@ import {
 export function LiveBanner({ subdomain }: { subdomain: string }) {
   const [dismissed, setDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
-  const url = `https://${subdomain}.vendah.com`;
+  const url = `https://${subdomain}.venfii.com`;
 
   if (dismissed) return null;
 

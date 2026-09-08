@@ -11,6 +11,7 @@ import {
   sendLowStockAlert,
   LOW_STOCK_THRESHOLD,
 } from "@/lib/low-stock-alerts";
+import { getLoyaltySettings, awardPointsForOrder } from "@/lib/loyalty";
 
 type OrderRow = {
   id: string;
@@ -115,6 +116,28 @@ export async function settlePaidTransaction(
 
         if (order.discount_code) {
           await incrementDiscountUsage(order.tenant_id, order.discount_code);
+        }
+
+        const settings = await getLoyaltySettings(order.tenant_id);
+        const orderRow = await admin
+          .from("orders")
+          .select("customer_email, total_minor")
+          .eq("id", order.id)
+          .maybeSingle();
+        if (settings?.enabled && orderRow?.data?.customer_email) {
+          const awarded = await awardPointsForOrder(
+            order.tenant_id,
+            orderRow.data.customer_email,
+            order.id,
+            Number(orderRow.data.total_minor),
+            settings.points_per_ghs
+          );
+          if (awarded > 0) {
+            await admin
+              .from("orders")
+              .update({ loyalty_points_awarded: awarded })
+              .eq("id", order.id);
+          }
         }
       }
     }

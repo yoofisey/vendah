@@ -12,7 +12,7 @@ import type { BillingCycle, SubscriptionTier } from "@/lib/types";
 
 export const GRACE_PERIOD_MS = 3 * 24 * 60 * 60 * 1000;
 
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "vendah.com";
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com";
 
 export const APEX_ORIGIN =
   APP_DOMAIN === "localhost"
@@ -38,16 +38,16 @@ export type SubscriptionRow = {
 };
 
 export function planCodeFor(tier: SubscriptionTier, cycle: BillingCycle): string {
-  return `vendah-${tier}-${cycle === "monthly" ? "m" : "y"}`;
+  return `venfii-${tier}-${cycle === "monthly" ? "m" : "y"}`;
 }
 
 export function planTierFromCode(code: string): SubscriptionTier | null {
-  const match = code.match(/^vendah-(free|starter|growth|industry)-(m|y)$/);
+  const match = code.match(/^venfii-(free|starter|growth|industry)-(m|y)$/);
   return match ? (match[1] as SubscriptionTier) : null;
 }
 
 export function planCycleFromCode(code: string): BillingCycle | null {
-  const match = code.match(/^vendah-(?:free|starter|growth|industry)-(m|y)$/);
+  const match = code.match(/^venfii-(?:free|starter|growth|industry)-(m|y)$/);
   return match ? (match[1] === "y" ? "annual" : "monthly") : null;
 }
 
@@ -76,7 +76,7 @@ export async function ensureBillingPlan(
 ): Promise<string> {
   const plan = PLANS[tier];
   return ensurePaystackPlan({
-    name: `vendah ${plan.name} (${cycleName(cycle)})`,
+    name: `venfii ${plan.name} (${cycleName(cycle)})`,
     planCode: planCodeFor(tier, cycle),
     amountMinor: cycleAmountMinor(tier, cycle),
     interval: cycle === "annual" ? "annually" : "monthly",

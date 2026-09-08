@@ -12,37 +12,37 @@ import {
 
 describe("planCodeFor", () => {
   it("returns correct code for monthly", () => {
-    expect(planCodeFor("starter", "monthly")).toBe("vendah-starter-m");
+    expect(planCodeFor("starter", "monthly")).toBe("venfii-starter-m");
   });
 
   it("returns correct code for annual", () => {
-    expect(planCodeFor("growth", "annual")).toBe("vendah-growth-y");
+    expect(planCodeFor("growth", "annual")).toBe("venfii-growth-y");
   });
 
   it("handles free tier", () => {
-    expect(planCodeFor("free", "monthly")).toBe("vendah-free-m");
+    expect(planCodeFor("free", "monthly")).toBe("venfii-free-m");
   });
 });
 
 describe("planTierFromCode", () => {
   it("extracts tier from valid code", () => {
-    expect(planTierFromCode("vendah-starter-m")).toBe("starter");
-    expect(planTierFromCode("vendah-growth-y")).toBe("growth");
-    expect(planTierFromCode("vendah-free-m")).toBe("free");
-    expect(planTierFromCode("vendah-industry-y")).toBe("industry");
+    expect(planTierFromCode("venfii-starter-m")).toBe("starter");
+    expect(planTierFromCode("venfii-growth-y")).toBe("growth");
+    expect(planTierFromCode("venfii-free-m")).toBe("free");
+    expect(planTierFromCode("venfii-industry-y")).toBe("industry");
   });
 
   it("returns null for invalid code", () => {
     expect(planTierFromCode("invalid")).toBeNull();
-    expect(planTierFromCode("vendah-")).toBeNull();
-    expect(planTierFromCode("vendah-starter")).toBeNull();
+    expect(planTierFromCode("venfii-")).toBeNull();
+    expect(planTierFromCode("venfii-starter")).toBeNull();
   });
 });
 
 describe("planCycleFromCode", () => {
   it("extracts cycle from valid code", () => {
-    expect(planCycleFromCode("vendah-starter-m")).toBe("monthly");
-    expect(planCycleFromCode("vendah-growth-y")).toBe("annual");
+    expect(planCycleFromCode("venfii-starter-m")).toBe("monthly");
+    expect(planCycleFromCode("venfii-growth-y")).toBe("annual");
   });
 
   it("returns null for invalid code", () => {

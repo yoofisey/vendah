@@ -1,4 +1,4 @@
-export function VendahLogo({
+export function VenfiiLogo({
   onDark = false,
   className = "",
 }: {
@@ -19,7 +19,7 @@ export function VendahLogo({
           onDark ? "text-white" : "text-charcoal"
         }`}
       >
-        vendah<span className="text-gold">.</span>
+        venfii<span className="text-gold">.</span>
       </span>
     </span>
   );

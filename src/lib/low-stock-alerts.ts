@@ -54,6 +54,6 @@ export async function sendLowStockAlert(
       `,
     });
   } catch (error) {
-    console.error("[vendah:email] low stock alert failed", error);
+    console.error("[venfii:email] low stock alert failed", error);
   }
 }

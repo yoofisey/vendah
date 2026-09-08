@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 
 const SPLASH_ROUTES: Record<string, string> = {
   "/sign-in": "Signing you in...",
@@ -53,7 +53,7 @@ export function RouteTransitionSplash() {
     <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-cream">
       <div className="flex flex-col items-center gap-6">
         <div className="animate-pulse">
-          <VendahLogo />
+          <VenfiiLogo />
         </div>
         <p className="text-sm font-medium text-charcoal-soft animate-pulse">
           {message}

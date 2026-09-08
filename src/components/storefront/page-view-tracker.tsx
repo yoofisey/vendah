@@ -12,10 +12,10 @@ export function PageViewTracker() {
     if (hasFired.current) return;
     hasFired.current = true;
 
-    let visitorId = sessionStorage.getItem("vendah_vid");
+    let visitorId = sessionStorage.getItem("venfii_vid");
     if (!visitorId) {
       visitorId = crypto.randomUUID();
-      sessionStorage.setItem("vendah_vid", visitorId);
+      sessionStorage.setItem("venfii_vid", visitorId);
     }
 
     fetch("/api/track", {

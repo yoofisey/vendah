@@ -5,6 +5,7 @@ import { requireUser, getCurrentTenant } from "@/lib/auth";
 import { sendOrderStatusUpdate } from "@/lib/fulfilment";
 import { ORDER_STATUSES } from "@/lib/order-status";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getLoyaltySettings, awardPointsForOrder } from "@/lib/loyalty";
 import { revalidatePath } from "next/cache";
 
 const orderStatusSchema = z.enum(ORDER_STATUSES);
@@ -49,6 +50,25 @@ export async function setOrderStatus(formData: FormData): Promise<void> {
     .select("*")
     .maybeSingle();
   if (!order) return;
+
+  if (status.data === "paid" && order.payment_method === "cod") {
+    const settings = await getLoyaltySettings(tenant.id);
+    if (settings?.enabled && order.customer_email) {
+      const awarded = await awardPointsForOrder(
+        tenant.id,
+        order.customer_email,
+        order.id,
+        Number(order.total_minor),
+        settings.points_per_ghs
+      );
+      if (awarded > 0) {
+        await admin
+          .from("orders")
+          .update({ loyalty_points_awarded: awarded })
+          .eq("id", order.id);
+      }
+    }
+  }
 
   if (["processing", "shipped", "delivered", "cancelled"].includes(status.data)) {
     const { data: items } = await admin

@@ -32,7 +32,7 @@ const mockItem2: CartItem = {
 
 describe("cartKey", () => {
   it("returns a key with the tenant id", () => {
-    expect(cartKey(TENANT_ID)).toBe("vendah-cart-test-tenant-123");
+    expect(cartKey(TENANT_ID)).toBe("venfii-cart-test-tenant-123");
   });
 });
 
@@ -68,10 +68,10 @@ describe("readCart / writeCart", () => {
 
   it("dispatches CART_CHANGE_EVENT on write", () => {
     const spy = vi.fn();
-    window.addEventListener("vendah-cart-change", spy);
+    window.addEventListener("venfii-cart-change", spy);
     writeCart(TENANT_ID, [mockItem]);
     expect(spy).toHaveBeenCalledTimes(1);
-    window.removeEventListener("vendah-cart-change", spy);
+    window.removeEventListener("venfii-cart-change", spy);
   });
 });
 

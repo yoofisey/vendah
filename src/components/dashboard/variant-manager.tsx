@@ -481,7 +481,7 @@ export function VariantManager({ tenantId, productId, variants: initial, attribu
                   Generate variant combinations
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
-                  Enter options for each attribute and Vendah creates every
+                  Enter options for each attribute and Venfii creates every
                   combination (e.g. Red × S, Red × M, Blue × S…).
                 </p>
               </div>

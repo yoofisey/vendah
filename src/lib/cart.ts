@@ -10,7 +10,7 @@ export type CartItem = {
 };
 
 export function cartKey(tenantId: string): string {
-  return `vendah-cart-${tenantId}`;
+  return `venfii-cart-${tenantId}`;
 }
 
 export function readCart(tenantId: string): CartItem[] {
@@ -23,7 +23,7 @@ export function readCart(tenantId: string): CartItem[] {
   }
 }
 
-export const CART_CHANGE_EVENT = "vendah-cart-change";
+export const CART_CHANGE_EVENT = "venfii-cart-change";
 
 export function writeCart(tenantId: string, items: CartItem[]): void {
   if (typeof window === "undefined") return;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 
 export function SplashScreen({
   message,
@@ -31,7 +31,7 @@ export function SplashScreen({
     >
       <div className="flex flex-col items-center gap-6">
         <div className="animate-pulse">
-          <VendahLogo />
+          <VenfiiLogo />
         </div>
         {message && (
           <p className="text-sm font-medium text-charcoal-soft animate-pulse">

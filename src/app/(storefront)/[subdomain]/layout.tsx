@@ -28,11 +28,11 @@ export async function generateMetadata({
   const description =
     tenant.about_text?.trim() ||
     preset.heroSubtitle ||
-    `Shop ${tenant.name} on vendah.`;
+    `Shop ${tenant.name} on venfii.`;
 
   return {
     title: {
-      default: `${tenant.name} — Shop on vendah`,
+      default: `${tenant.name} — Shop on venfii`,
       template: `%s · ${tenant.name}`,
     },
     description,
@@ -40,7 +40,7 @@ export async function generateMetadata({
     openGraph: {
       title: tenant.name,
       description,
-      siteName: `${tenant.name} on vendah`,
+      siteName: `${tenant.name} on venfii`,
       type: "website",
       url: getStorefrontUrl(subdomain),
       images: tenant.branding?.bannerUrl

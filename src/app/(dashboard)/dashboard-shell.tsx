@@ -32,7 +32,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { logOut } from "@/app/(auth)/actions";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 import { getStorefrontUrl } from "@/lib/tenant";
 import { isFeatureEnabled, type FeatureKey } from "@/lib/plan-gating";
 
@@ -141,7 +141,7 @@ export function DashboardChrome({
             </span>
             <span className={`min-w-0 ${collapsed ? "hidden lg:hover:block" : "hidden lg:block"}`}>
               <span className="block font-heading text-lg font-semibold leading-none tracking-tight">
-                vendah<span className="text-gold">.</span>
+                venfii<span className="text-gold">.</span>
               </span>
               <span className="mt-1 block max-w-40 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-white/45">
                 {tenantName}
@@ -231,7 +231,7 @@ export function DashboardChrome({
             <span className={collapsed ? "hidden lg:hover:block" : "hidden lg:block"}>Help &amp; FAQ</span>
           </Link>
           <a
-            href="mailto:support@vendah.com?subject=Help%20with%20my%20shop"
+            href="mailto:support@venfii.com?subject=Help%20with%20my%20shop"
             className={`flex items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/60 transition duration-200 hover:bg-white/5 hover:text-white ${
               collapsed ? "lg:hover:justify-start" : "lg:justify-start"
             }`}
@@ -287,7 +287,7 @@ export function DashboardChrome({
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:14px_14px]"
             />
             <div className="relative flex h-16 items-center justify-between px-5">
-              <VendahLogo onDark />
+              <VenfiiLogo onDark />
               <button
                 onClick={() => setDrawerOpen(false)}
                 aria-label="Close menu"
@@ -349,7 +349,7 @@ export function DashboardChrome({
                 <QuestionMarkCircleIcon className="h-5 w-5" /> Help &amp; FAQ
               </Link>
               <a
-                href="mailto:support@vendah.com?subject=Help%20with%20my%20shop"
+                href="mailto:support@venfii.com?subject=Help%20with%20my%20shop"
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/60 hover:bg-white/5 hover:text-white"
               >
                 <LifebuoyIcon className="h-5 w-5" /> Help & Support

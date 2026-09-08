@@ -77,7 +77,7 @@ export async function sendOrderConfirmation(
       ),
     });
   } catch (error) {
-    console.error("[vendah:email] order confirmation failed", error);
+    console.error("[venfii:email] order confirmation failed", error);
   }
 }
 
@@ -115,7 +115,7 @@ export async function sendNewOrderNotificationToMerchant(
       ),
     });
   } catch (error) {
-    console.error("[vendah:email] merchant notification failed", error);
+    console.error("[venfii:email] merchant notification failed", error);
   }
 }
 
@@ -140,6 +140,6 @@ export async function sendOrderStatusUpdate(
       html: orderStatusHtml(shopName, emailOrder, status),
     });
   } catch (error) {
-    console.error("[vendah:email] order status update failed", error);
+    console.error("[venfii:email] order status update failed", error);
   }
 }

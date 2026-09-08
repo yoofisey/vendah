@@ -37,7 +37,7 @@ yarn-error.log*
 .vercel
 
 # supabase local cli artifacts
-/supabase/.temp
+**/.temp/
 /supabase/.branches
 
 # typescript

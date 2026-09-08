@@ -37,7 +37,7 @@ export default async function OGImage({
             </p>
           )}
           <p style={{ fontSize: "22px", color: "rgba(255,255,255,0.7)", margin: 0, fontWeight: 400 }}>
-            Shop now at {subdomain}.vendah.com
+            Shop now at {subdomain}.venfii.com
           </p>
         </div>
       </div>

@@ -30,7 +30,7 @@ const FAQS = [
   },
   {
     q: "How do I contact support?",
-    a: "Email support@vendah.com",
+    a: "Email support@venfii.com",
   },
   {
     q: "What are the plan features?",

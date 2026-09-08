@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How this store on vendah collects, uses and protects your information.",
+    "How this store on venfii collects, uses and protects your information.",
 };
 
 export default async function PrivacyPage({
@@ -34,7 +34,7 @@ export default async function PrivacyPage({
 
       <p className="mt-8 text-base leading-relaxed text-charcoal-soft">
         Your privacy matters to {tenant.name}. This policy explains what
-        information we collect when you shop with us on vendah, how we use it,
+        information we collect when you shop with us on venfii, how we use it,
         and the choices you have.
       </p>
 
@@ -84,7 +84,7 @@ export default async function PrivacyPage({
               and phone number so your parcel arrives
             </li>
             <li>
-              The vendah platform, which hosts this storefront and stores order
+              The venfii platform, which hosts this storefront and stores order
               records on our behalf
             </li>
           </ul>

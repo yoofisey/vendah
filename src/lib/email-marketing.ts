@@ -59,7 +59,7 @@ export async function sendCampaign(
             <div style="margin-top:16px;line-height:1.6;color:#1c1c1e;white-space:pre-line;">${campaign.body}</div>
             <hr style="margin:32px 0;border:none;border-top:1px solid #e5e7eb;" />
             <p style="font-size:12px;color:#999;text-align:center;">
-              Sent by <a href="https://vendah.com" style="color:#1b4332;">vendah</a> for ${tenant.name}
+              Sent by <a href="https://venfii.com" style="color:#1b4332;">venfii</a> for ${tenant.name}
             </p>
           </div>
         `,

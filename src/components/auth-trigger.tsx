@@ -2,8 +2,8 @@
 
 export type AuthMode = "signin" | "signup";
 
-export const AUTH_OPEN_EVENT = "vendah:open-auth";
-export const AUTH_SWITCH_EVENT = "vendah:switch-auth";
+export const AUTH_OPEN_EVENT = "venfii:open-auth";
+export const AUTH_SWITCH_EVENT = "venfii:switch-auth";
 
 export function openAuthSheet(mode: AuthMode) {
   window.dispatchEvent(

@@ -16,7 +16,7 @@ const PLANS_LIST: {
     id: "free",
     name: "Free",
     blurb: "Launch your shop at no cost.",
-    features: ["6% charge on sales", "Up to 20 products", "Powered by vendah footer"],
+    features: ["6% charge on sales", "Up to 20 products", "Powered by venfii footer"],
   },
   {
     id: "starter",

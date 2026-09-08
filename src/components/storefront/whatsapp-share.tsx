@@ -17,7 +17,7 @@ export function WhatsAppShareButton({
   url: string;
   className?: string;
 }) {
-  const text = encodeURIComponent(`Check out ${name} on Vendah!\n${url}`);
+  const text = encodeURIComponent(`Check out ${name} on Venfii!\n${url}`);
   const href = `https://wa.me/?text=${text}`;
 
   return (

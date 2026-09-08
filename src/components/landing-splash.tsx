@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 
-const SPLASH_KEY = "vendah_splash_seen";
+const SPLASH_KEY = "venfii_splash_seen";
 
 export function LandingSplash() {
   const [show, setShow] = useState(false);
@@ -45,7 +45,7 @@ export function LandingSplash() {
                 : "opacity-0 translate-y-4"
           }`}
         >
-          <VendahLogo />
+          <VenfiiLogo />
         </div>
 
         <div

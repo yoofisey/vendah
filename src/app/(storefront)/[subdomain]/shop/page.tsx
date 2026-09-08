@@ -363,7 +363,7 @@ function AboutStrip({ tenant, preset }: { tenant: Tenant; preset: CategoryPreset
           </p>
           <p className="mt-4 text-lg leading-relaxed text-white/85">
             {tenant.about_text?.trim() ||
-              `${tenant.name} is a shop on vendah — quality products, honest prices and service you can count on.`}
+              `${tenant.name} is a shop on venfii — quality products, honest prices and service you can count on.`}
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-4">

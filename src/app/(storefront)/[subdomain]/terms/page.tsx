@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The rules for browsing, ordering and paying at this store on vendah.",
+    "The rules for browsing, ordering and paying at this store on venfii.",
 };
 
 export default async function TermsPage({
@@ -40,7 +40,7 @@ export default async function TermsPage({
 
       <p className="mt-8 text-base leading-relaxed text-charcoal-soft">
         Welcome to {tenant.name}. These terms explain the rules for browsing,
-        ordering and paying through our online storefront, hosted on vendah. By
+        ordering and paying through our online storefront, hosted on venfii. By
         placing an order you agree to them, so please take a moment to read
         through.
       </p>
@@ -49,7 +49,7 @@ export default async function TermsPage({
         <Section title="1. Introduction">
           <p>
             This storefront is operated by {tenant.name} (&ldquo;we&rdquo;,
-            &ldquo;us&rdquo;, &ldquo;our&rdquo;) on the vendah platform. By
+            &ldquo;us&rdquo;, &ldquo;our&rdquo;) on the venfii platform. By
             using this site or placing an order, you agree to these terms. If
             you do not agree, please do not place an order.
           </p>

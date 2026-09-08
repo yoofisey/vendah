@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { SignUpForm } from "./sign-up-form";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 import type { BusinessCategory } from "@/lib/types";
 
 export default async function SignUpPage() {
@@ -24,7 +24,7 @@ export default async function SignUpPage() {
       />
       <div className="mx-auto flex w-full max-w-xl flex-col py-2 sm:py-4">
         <Link href="/" className="mb-8 w-fit sm:mb-10">
-          <VendahLogo />
+          <VenfiiLogo />
         </Link>
 
         <div className="mb-7 max-w-md sm:mb-8">

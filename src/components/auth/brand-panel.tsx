@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { VendahLogo } from "@/components/vendah-logo";
+import { VenfiiLogo } from "@/components/venfii-logo";
 
 export function BrandPanel({
   eyebrow,
@@ -41,7 +41,7 @@ export function BrandPanel({
 
       <div className="relative z-10 flex flex-1 flex-col justify-between gap-16">
         <Link href="/" className="w-fit">
-          <VendahLogo onDark />
+          <VenfiiLogo onDark />
         </Link>
 
         <div className="max-w-md">
