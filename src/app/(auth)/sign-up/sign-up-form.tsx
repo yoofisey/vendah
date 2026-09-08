@@ -27,20 +27,22 @@ import { Field, fieldInputBase } from "@/components/auth/field";
 import { createClient } from "@/lib/supabase/client";
 import type { BusinessCategory } from "@/lib/types";
 
-async function signUpWithGoogle() {
+async function signUpWithGoogle(): Promise<{ error?: string } | undefined> {
   const supabase = createClient();
-  await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: `${window.location.origin}/auth/callback` },
   });
+  if (error) return { error: error.message };
 }
 
-async function signUpWithFacebook() {
+async function signUpWithFacebook(): Promise<{ error?: string } | undefined> {
   const supabase = createClient();
-  await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "facebook",
     options: { redirectTo: `${window.location.origin}/auth/callback` },
   });
+  if (error) return { error: error.message };
 }
 
 const initialState: AuthState = {};
@@ -143,6 +145,7 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
   const [categoryTouched, setCategoryTouched] = useState(false);
 
   const [localError, setLocalError] = useState<string | null>(null);
+  const [oauthError, setOauthError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -334,14 +337,15 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
         </p>
       </div>
 
-      {(state.error || localError) && (
+      {(state.error || localError || oauthError) && (
         <div
           className="mt-5 flex items-start gap-2.5 rounded-xl border border-red-100 bg-red-50 px-3.5 py-3 text-sm text-red-700"
           role="alert"
         >
           <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
           <span>
-            {localError ??
+            {oauthError ??
+              localError ??
               (state.error?.includes("security purposes")
                 ? "Too many attempts. Please wait a moment before trying again."
                 : state.error)}
@@ -355,7 +359,11 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={signUpWithGoogle}
+                onClick={async () => {
+                  setOauthError(null);
+                  const res = await signUpWithGoogle();
+                  if (res?.error) setOauthError(res.error);
+                }}
                 className="flex items-center justify-center gap-2 rounded-xl border border-charcoal/15 bg-white px-4 py-3 text-sm font-medium text-charcoal transition duration-200 hover:-translate-y-px hover:border-charcoal/25 hover:shadow-md"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -368,7 +376,11 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
               </button>
               <button
                 type="button"
-                onClick={signUpWithFacebook}
+                onClick={async () => {
+                  setOauthError(null);
+                  const res = await signUpWithFacebook();
+                  if (res?.error) setOauthError(res.error);
+                }}
                 className="flex items-center justify-center gap-2 rounded-xl border border-charcoal/15 bg-white px-4 py-3 text-sm font-medium text-charcoal transition duration-200 hover:-translate-y-px hover:border-charcoal/25 hover:shadow-md"
               >
                 <svg className="h-5 w-5" fill="#1877F2" viewBox="0 0 24 24">

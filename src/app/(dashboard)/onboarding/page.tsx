@@ -42,6 +42,11 @@ export default async function OnboardingPage() {
     <OnboardingWizard
       categories={(categories as BusinessCategory[]) ?? []}
       tenant={(tenant as Tenant) ?? null}
+      userFullName={
+        (user.user_metadata?.full_name as string) ||
+        (user.user_metadata?.name as string) ||
+        ""
+      }
     />
   );
 }

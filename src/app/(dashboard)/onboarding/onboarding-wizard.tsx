@@ -17,6 +17,7 @@ import type { BusinessCategory, PlanId, Tenant } from "@/lib/types";
 type Props = {
   categories: BusinessCategory[];
   tenant: Tenant | null;
+  userFullName?: string;
 };
 
 const STEPS = ["Business", "Branding", "Storefront link", "Plan"];
@@ -32,7 +33,7 @@ const PALETTES = [
 const inputClass =
   "w-full rounded-lg border border-charcoal/15 bg-cream px-4 py-3 text-sm text-charcoal transition duration-200 placeholder:text-muted focus:border-gold focus:bg-white focus:outline-none focus:ring-2 focus:ring-gold/30";
 
-export function OnboardingWizard({ categories, tenant }: Props) {
+export function OnboardingWizard({ categories, tenant, userFullName = "" }: Props) {
   const [step, setStep] = useState(tenant?.subdomain ? 3 : 0);
   const router = useRouter();
 
@@ -51,6 +52,7 @@ export function OnboardingWizard({ categories, tenant }: Props) {
         <BasicsStep
           tenant={tenant}
           categories={categories}
+          userFullName={userFullName}
           onDone={() => {
             router.refresh();
             setStep(1);
@@ -76,10 +78,12 @@ function BasicsStep({
   tenant,
   categories,
   onDone,
+  userFullName = "",
 }: {
   tenant: Tenant | null;
   categories: BusinessCategory[];
   onDone: () => void;
+  userFullName?: string;
 }) {
   const [state, action, pending] = useActionState(saveBasics, {});
   const existingIds: string[] = tenant?.business_category_ids?.length
@@ -120,7 +124,7 @@ function BasicsStep({
           id="name"
           name="name"
           required
-          defaultValue={tenant?.name ?? ""}
+          defaultValue={tenant?.name ?? userFullName}
           placeholder="e.g. Adwoa's Boutique"
           className={`mt-1 ${inputClass}`}
         />

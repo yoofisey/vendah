@@ -16,36 +16,43 @@ const initialState: AuthState = {};
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-async function signInWithGoogle() {
+async function signInWithGoogle(): Promise<{ error?: string } | undefined> {
   const supabase = createClient();
-  await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
     },
   });
+  if (error) return { error: error.message };
 }
 
-async function signInWithFacebook() {
+async function signInWithFacebook(): Promise<{ error?: string } | undefined> {
   const supabase = createClient();
-  await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "facebook",
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
     },
   });
+  if (error) return { error: error.message };
 }
 
 export function SignInForm() {
   const [state, action, pending] = useActionState(logIn, initialState);
   const [showPassword, setShowPassword] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(null);
 
   const handleGoogle = useCallback(async () => {
-    await signInWithGoogle();
+    setOauthError(null);
+    const res = await signInWithGoogle();
+    if (res?.error) setOauthError(res.error);
   }, []);
 
   const handleFacebook = useCallback(async () => {
-    await signInWithFacebook();
+    setOauthError(null);
+    const res = await signInWithFacebook();
+    if (res?.error) setOauthError(res.error);
   }, []);
 
   const [email, setEmail] = useState("");
@@ -151,6 +158,16 @@ export function SignInForm() {
         </span>
         <span className="h-px flex-1 bg-charcoal/10" />
       </div>
+
+      {oauthError && (
+        <div
+          className="flex items-start gap-2.5 rounded-xl border border-red-100 bg-red-50 px-3.5 py-3 text-sm text-red-700"
+          role="alert"
+        >
+          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+          <span>{oauthError}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 pt-0.5">
         <button
