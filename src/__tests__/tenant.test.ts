@@ -100,6 +100,52 @@ describe("getStorefrontUrl", () => {
   it("builds URL with subdomain", () => {
     expect(getStorefrontUrl("myshop")).toBe("https://myshop.venfii.com");
   });
+
+  it("uses path-based URLs when path-based preview mode is enabled", () => {
+    const previousFlag = process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED;
+    const previousSite = process.env.NEXT_PUBLIC_SITE_URL;
+    process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED = "true";
+    process.env.NEXT_PUBLIC_SITE_URL = "https://vendah-blue.vercel.app";
+    try {
+      expect(getStorefrontUrl("myshop")).toBe(
+        "https://vendah-blue.vercel.app/myshop"
+      );
+    } finally {
+      if (previousFlag === undefined) {
+        delete process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED;
+      } else {
+        process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED = previousFlag;
+      }
+      if (previousSite === undefined) {
+        delete process.env.NEXT_PUBLIC_SITE_URL;
+      } else {
+        process.env.NEXT_PUBLIC_SITE_URL = previousSite;
+      }
+    }
+  });
+
+  it("respects the site URL origin in path-based mode", () => {
+    const previousFlag = process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED;
+    const previousSite = process.env.NEXT_PUBLIC_SITE_URL;
+    process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED = "true";
+    process.env.NEXT_PUBLIC_SITE_URL = "https://www.venfii.com/";
+    try {
+      expect(getStorefrontUrl("myshop")).toBe(
+        "https://www.venfii.com/myshop"
+      );
+    } finally {
+      if (previousFlag === undefined) {
+        delete process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED;
+      } else {
+        process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED = previousFlag;
+      }
+      if (previousSite === undefined) {
+        delete process.env.NEXT_PUBLIC_SITE_URL;
+      } else {
+        process.env.NEXT_PUBLIC_SITE_URL = previousSite;
+      }
+    }
+  });
 });
 
 describe("getDashboardUrl", () => {

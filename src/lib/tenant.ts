@@ -42,11 +42,25 @@ export const RESERVED_SUBDOMAINS = new Set([
   "shop",
 ]);
 
+function getAppDomain(): string {
+  return process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com";
+}
+
+function getAppOrigin(): string {
+  const site = process.env.NEXT_PUBLIC_SITE_URL;
+  if (site) return site.replace(/\/+$/, "");
+  const domain = getAppDomain();
+  return domain === "localhost" ? "http://localhost:3000" : `https://${domain}`;
+}
+
 export function getStorefrontUrl(subdomain: string): string {
-  return `https://${subdomain}.${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com"}`;
+  if (process.env.NEXT_PUBLIC_STOREFRONT_PATH_BASED === "true") {
+    return `${getAppOrigin()}/${subdomain}`;
+  }
+  return `https://${subdomain}.${getAppDomain()}`;
 }
 
 export function getDashboardUrl(path = ""): string {
-  const origin = `https://${process.env.NEXT_PUBLIC_APP_DOMAIN ?? "venfii.com"}`;
+  const origin = getAppOrigin();
   return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
 }
