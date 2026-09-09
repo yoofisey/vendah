@@ -459,3 +459,38 @@ export const getRelatedProducts = cache(
     return (data as Product[]) ?? [];
   }
 );
+
+export async function sortProducts(
+  products: Product[],
+  sort: string
+): Promise<Product[]> {
+  const list = [...products];
+  if (sort === "price-asc") {
+    return list.sort((a, b) => a.price_minor - b.price_minor);
+  }
+  if (sort === "price-desc") {
+    return list.sort((a, b) => b.price_minor - a.price_minor);
+  }
+  if (sort === "popular") {
+    const supabase = await createClient();
+    const { data: rows } = await supabase
+      .from("order_items")
+      .select("product_id, quantity")
+      .in(
+        "product_id",
+        list.map((p) => p.id)
+      );
+    const popularity = new Map<string, number>();
+    for (const row of rows ?? []) {
+      if (!row.product_id) continue;
+      popularity.set(
+        row.product_id,
+        (popularity.get(row.product_id) ?? 0) + Number(row.quantity)
+      );
+    }
+    return list.sort(
+      (a, b) => (popularity.get(b.id) ?? 0) - (popularity.get(a.id) ?? 0)
+    );
+  }
+  return list;
+}

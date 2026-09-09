@@ -9,18 +9,27 @@ import {
 } from "@heroicons/react/24/outline";
 import {
   getBestSellers,
+  getCategoryAttributeDefsForIds,
   getFeaturedProducts,
   getProductCategories,
   getStorefrontProducts,
   getTenantBusinessCategorySlug,
   getTenantBySubdomain,
+  sortProducts,
 } from "@/lib/storefront";
-import { createClient } from "@/lib/supabase/server";
+import {
+  applyProductAttributeFilters,
+  buildProductFilterDefs,
+  filterProductsByPrice,
+  parseAttributeFilters,
+  parsePriceParam,
+} from "@/lib/storefront-filters";
 import { getCategoryPreset } from "@/lib/category-presets";
 import type { CardStyle, CategoryPreset, StorefrontLayout } from "@/lib/category-presets";
 import { ProductCard } from "../product-card";
 import { ProductSort } from "../product-sort";
 import { PriceRangeFilter } from "../price-range-filter";
+import { AttributeFilters } from "../attribute-filters";
 import { productGridClasses } from "../storefront-grid";
 import type { Product, Tenant } from "@/lib/types";
 import { getStorefrontUrl } from "@/lib/tenant";
@@ -67,20 +76,31 @@ export default async function ShopPage({
 
   const sp = await searchParams;
   const sort = sp.sort ?? "newest";
-  const minPrice = sp.min_price ? Number(sp.min_price) : undefined;
-  const maxPrice = sp.max_price ? Number(sp.max_price) : undefined;
+  const minPrice = parsePriceParam(sp.min_price);
+  const maxPrice = parsePriceParam(sp.max_price);
 
-  const [products, categories, featured, categorySlug, bestSellers] =
+  const [products, categories, featured, categorySlug, bestSellers, attributeDefs] =
     await Promise.all([
       getStorefrontProducts(tenant.id),
       getProductCategories(tenant.id),
       getFeaturedProducts(tenant.id),
       getTenantBusinessCategorySlug(tenant.id),
       getBestSellers(tenant.id, 8),
+      getCategoryAttributeDefsForIds(tenant.business_category_ids),
     ]);
   const preset = getCategoryPreset(categorySlug);
 
-  const filtered = filterByPrice(products, minPrice, maxPrice);
+  const attrFilters = parseAttributeFilters(sp);
+  const filterDefs = buildProductFilterDefs(products, attributeDefs);
+  const hasActiveFilters =
+    Object.keys(attrFilters).length > 0 ||
+    minPrice !== undefined ||
+    maxPrice !== undefined;
+
+  const filtered = applyProductAttributeFilters(
+    filterProductsByPrice(products, minPrice, maxPrice),
+    attrFilters
+  );
   const sorted = await sortProducts(filtered, sort);
 
   const shownIds = new Set(sorted.map((p) => p.id));
@@ -113,25 +133,41 @@ export default async function ShopPage({
           </div>
         </div>
 
+        {filterDefs.length > 0 && (
+          <div className="mt-6">
+            <AttributeFilters defs={filterDefs} />
+          </div>
+        )}
+
         {sorted.length === 0 ? (
           <div className="mt-6 rounded-2xl border border-dashed border-charcoal/20 bg-white p-14 text-center shadow-sm">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pine/10 text-pine">
               <ShoppingBagIcon className="h-7 w-7" />
             </span>
             <h3 className="mt-4 font-heading text-xl font-semibold text-charcoal">
-              No products yet
+              {hasActiveFilters ? "No matches" : "No products yet"}
             </h3>
             <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
-              We&apos;re putting the finishing touches on our catalogue. Check
-              back soon — something great is on its way!
+              {hasActiveFilters
+                ? "Nothing in the catalogue matches your filters. Try clearing them to see everything we have."
+                : "We're putting the finishing touches on our catalogue. Check back soon — something great is on its way!"}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/"
-                className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
-              >
-                Back to home
-              </Link>
+              {hasActiveFilters ? (
+                <Link
+                  href="/shop"
+                  className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
+                >
+                  Clear filters
+                </Link>
+              ) : (
+                <Link
+                  href="/"
+                  className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
+                >
+                  Back to home
+                </Link>
+              )}
               <Link
                 href="/contact"
                 className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
@@ -416,50 +452,4 @@ function FeaturedSection({
       </div>
     </section>
   );
-}
-
-async function sortProducts(
-  products: Product[],
-  sort: string
-): Promise<Product[]> {
-  const list = [...products];
-  if (sort === "price-asc") {
-    return list.sort((a, b) => a.price_minor - b.price_minor);
-  }
-  if (sort === "price-desc") {
-    return list.sort((a, b) => b.price_minor - a.price_minor);
-  }
-  if (sort === "popular") {
-    const supabase = await createClient();
-    const { data: rows } = await supabase
-      .from("order_items")
-      .select("product_id, quantity")
-      .in("product_id", list.map((p) => p.id));
-    const popularity = new Map<string, number>();
-    for (const row of rows ?? []) {
-      if (!row.product_id) continue;
-      popularity.set(
-        row.product_id,
-        (popularity.get(row.product_id) ?? 0) + Number(row.quantity)
-      );
-    }
-    return list.sort(
-      (a, b) => (popularity.get(b.id) ?? 0) - (popularity.get(a.id) ?? 0)
-    );
-  }
-  return list;
-}
-
-function filterByPrice(
-  products: Product[],
-  min?: number,
-  max?: number
-): Product[] {
-  if (min === undefined && max === undefined) return products;
-  return products.filter((p) => {
-    const price = p.price_minor / 100;
-    if (min !== undefined && price < min) return false;
-    if (max !== undefined && price > max) return false;
-    return true;
-  });
 }
