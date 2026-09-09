@@ -3,39 +3,39 @@
 import { useEffect, useState } from "react";
 import { VenfiiLogo } from "@/components/venfii-logo";
 
-const SPLASH_KEY = "venfii_splash_seen";
+const SPLASH_COOKIE = "venfii_splash_seen";
 
-export function LandingSplash() {
-  const [show, setShow] = useState(false);
+export function LandingSplash({ show }: { show: boolean }) {
+  const [visible, setVisible] = useState(show);
   const [phase, setPhase] = useState<"in" | "visible" | "out">("in");
 
   useEffect(() => {
-    if (sessionStorage.getItem(SPLASH_KEY)) {
+    if (!show) {
+      setVisible(false);
       return;
     }
-    setShow(true);
-    sessionStorage.setItem(SPLASH_KEY, "1");
+    document.cookie = `${SPLASH_COOKIE}=1; path=/; max-age=2592000; samesite=lax`;
 
     const t1 = setTimeout(() => setPhase("visible"), 60);
-    const t2 = setTimeout(() => setPhase("out"), 2900);
-    const t3 = setTimeout(() => setShow(false), 3600);
+    const t2 = setTimeout(() => setPhase("out"), 2600);
+    const t3 = setTimeout(() => setVisible(false), 3300);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, []);
+  }, [show]);
 
-  if (!show) return null;
+  if (!visible) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-cream transition-opacity duration-700 ease-out ${
+      className={`fixed inset-0 z-[9999] flex min-h-dvh items-center justify-center overflow-hidden bg-cream px-6 transition-opacity duration-700 ease-out ${
         phase === "out" ? "opacity-0" : "opacity-100"
       }`}
     >
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex w-full max-w-sm flex-col items-center text-center">
         <div
           className={`transition-all duration-700 ease-out ${
             phase === "out"

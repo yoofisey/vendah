@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useCallback } from "react";
+import { useActionState, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -11,6 +11,7 @@ import {
 import { logIn, type AuthState } from "../actions";
 import { Field } from "@/components/auth/field";
 import { createClient } from "@/lib/supabase/client";
+import { useAuthTransition } from "@/components/auth-transition-splash";
 
 const initialState: AuthState = {};
 
@@ -42,6 +43,11 @@ export function SignInForm() {
   const [state, action, pending] = useActionState(logIn, initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
+  const { begin, end } = useAuthTransition();
+
+  useEffect(() => {
+    if (state.error) end();
+  }, [state.error, end]);
 
   const handleGoogle = useCallback(async () => {
     setOauthError(null);
@@ -64,7 +70,17 @@ export function SignInForm() {
   const emailValid = email.length > 0 && EMAIL_RE.test(email);
 
   return (
-    <form action={action} noValidate className="space-y-6">
+    <form
+      action={action}
+      noValidate
+      className="space-y-6"
+      onSubmit={(e) => {
+        const data = new FormData(e.currentTarget);
+        const emailOk = EMAIL_RE.test(String(data.get("email") ?? ""));
+        const passwordOk = String(data.get("password") ?? "").length > 0;
+        if (emailOk && passwordOk) begin("Signing you in…");
+      }}
+    >
       <div className="space-y-5">
       <Field
         id="email"

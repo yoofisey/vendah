@@ -26,6 +26,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { Field, fieldInputBase } from "@/components/auth/field";
 import { createClient } from "@/lib/supabase/client";
 import type { BusinessCategory } from "@/lib/types";
+import { useAuthTransition } from "@/components/auth-transition-splash";
 
 async function signUpWithGoogle(): Promise<{ error?: string } | undefined> {
   const supabase = createClient();
@@ -147,6 +148,11 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
   const [localError, setLocalError] = useState<string | null>(null);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
+  const { begin, end } = useAuthTransition();
+
+  useEffect(() => {
+    if (state.error || state.needEmailConfirmation) end();
+  }, [state.error, state.needEmailConfirmation, end]);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -308,6 +314,12 @@ export function SignUpForm({ categories }: { categories: BusinessCategory[] }) {
       action={action}
       className="relative overflow-hidden rounded-2xl border border-white/80 bg-white/95 px-6 py-7 shadow-[0_30px_70px_-32px_rgba(27,67,50,0.45)] backdrop-blur sm:px-9 sm:py-9"
       noValidate
+      onSubmit={(e) => {
+        const data = new FormData(e.currentTarget);
+        const emailOk = String(data.get("email") ?? "").trim().length > 0;
+        const passwordOk = String(data.get("password") ?? "").length >= 8;
+        if (emailOk && passwordOk) begin("Launching your shop…");
+      }}
     >
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,transparent,#d4a017_45%,#b8870f_55%,transparent)]"

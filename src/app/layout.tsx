@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
-import { RouteTransitionSplash } from "@/components/route-transition-splash";
+import { AuthTransitionProvider } from "@/components/auth-transition-splash";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -32,8 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body>
-        <RouteTransitionSplash />
-        {children}
+        <AuthTransitionProvider>{children}</AuthTransitionProvider>
       </body>
     </html>
   );
