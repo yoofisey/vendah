@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCustomerAddresses } from "@/lib/addresses";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { createClient } from "@/lib/supabase/server";
 import { AddressBook, type AddressRow } from "./address-form";
 
@@ -33,7 +34,7 @@ export default async function AddressesPage({
         </p>
         <div className="mt-8 text-center">
           <Link
-            href="/account"
+            href={resolveStorefrontHref(subdomain, "/account")}
             className="inline-block rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
           >
             Sign in or create an account

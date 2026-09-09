@@ -2,8 +2,10 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { formatMoney } from "@/lib/format";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { lookupOrder, type TrackState } from "./actions";
 import type { TrackedOrder } from "@/lib/storefront";
 
@@ -26,6 +28,7 @@ export function TrackOrderForm({
 
   const order = "order" in state ? state.order : null;
   const error = "error" in state ? state.error : undefined;
+  const { subdomain } = useParams<{ subdomain?: string }>();
 
   return (
     <div className="space-y-6">
@@ -72,12 +75,18 @@ export function TrackOrderForm({
         </button>
       </form>
 
-      {order && <OrderStatusCard order={order} />}
+      {order && <OrderStatusCard order={order} subdomain={subdomain} />}
     </div>
   );
 }
 
-function OrderStatusCard({ order }: { order: TrackedOrder }) {
+function OrderStatusCard({
+  order,
+  subdomain,
+}: {
+  order: TrackedOrder;
+  subdomain?: string;
+}) {
   const current = TRACK_STEPS.indexOf(order.status);
   const cancelled = order.status === "cancelled";
 
@@ -191,7 +200,7 @@ function OrderStatusCard({ order }: { order: TrackedOrder }) {
 
       <div className="border-t border-charcoal/10 px-6 py-4 text-sm">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="font-medium text-pine underline-offset-4 hover:underline"
         >
           Continue shopping

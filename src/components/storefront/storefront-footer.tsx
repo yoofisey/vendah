@@ -5,11 +5,13 @@ import {
   PhoneIcon,
 } from "@heroicons/react/24/outline";
 import { WhatsAppCatalogLink } from "@/components/storefront/whatsapp-share";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import type { Tenant } from "@/lib/types";
 
 export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
   const contact = tenant.contact_info ?? {};
   const year = new Date().getFullYear();
+  const subdomain = tenant.subdomain;
 
   return (
     <footer className="border-t border-charcoal/10 bg-white">
@@ -48,22 +50,22 @@ export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
           </p>
           <ul className="mt-4 space-y-2 text-sm text-muted">
             <li>
-              <Link href="/shop" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/shop")} className="transition duration-150 hover:text-pine">
                 Shop
               </Link>
             </li>
             <li>
-              <Link href="/account" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/account")} className="transition duration-150 hover:text-pine">
                 Account
               </Link>
             </li>
             <li>
-              <Link href="/wishlist" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/wishlist")} className="transition duration-150 hover:text-pine">
                 Wishlist
               </Link>
             </li>
             <li>
-              <Link href="/track" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/track")} className="transition duration-150 hover:text-pine">
                 Track order
               </Link>
             </li>
@@ -76,27 +78,27 @@ export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
           </p>
           <ul className="mt-4 space-y-2 text-sm text-muted">
             <li>
-              <Link href="/delivery" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/delivery")} className="transition duration-150 hover:text-pine">
                 Delivery &amp; Returns
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/terms")} className="transition duration-150 hover:text-pine">
                 Terms
               </Link>
             </li>
             <li>
-              <Link href="/privacy" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/privacy")} className="transition duration-150 hover:text-pine">
                 Privacy
               </Link>
             </li>
             <li>
-              <Link href="/faq" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/faq")} className="transition duration-150 hover:text-pine">
                 FAQs
               </Link>
             </li>
             <li>
-              <Link href="/about" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/about")} className="transition duration-150 hover:text-pine">
                 About
               </Link>
             </li>
@@ -141,7 +143,7 @@ export function StorefrontFooter({ tenant }: { tenant: Tenant }) {
               </li>
             )}
             <li>
-              <Link href="/contact" className="transition duration-150 hover:text-pine">
+              <Link href={resolveStorefrontHref(subdomain, "/contact")} className="transition duration-150 hover:text-pine">
                 Contact page
               </Link>
             </li>

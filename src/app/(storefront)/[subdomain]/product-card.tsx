@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { formatMoney } from "@/lib/format";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { WishlistButton } from "@/components/storefront/wishlist-button";
 import { AddToCart } from "./products/[slug]/add-to-cart";
 import type { CardStyle } from "@/lib/category-presets";
@@ -57,11 +59,16 @@ export function ProductCard({
   const soldOut = product.stock === 0;
   const lowStock = !soldOut && product.stock > 0 && product.stock <= 5;
   const spec = Object.values(product.attributes ?? {})[0];
+  const { subdomain } = useParams<{ subdomain?: string }>();
+  const productHref = resolveStorefrontHref(
+    subdomain,
+    `/products/${product.slug}`
+  );
 
   return (
     <div className={CARD_CLASSES[variant]}>
       <Link
-        href={`/products/${product.slug}`}
+        href={productHref}
         className={`relative block w-full bg-cream-soft ${
           variant === "compact" ? "aspect-[1/1]" : "aspect-[4/5]"
         }`}
@@ -99,7 +106,7 @@ export function ProductCard({
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <Link
-          href={`/products/${product.slug}`}
+          href={productHref}
           className={NAME_CLASSES[variant]}
         >
           {product.name}

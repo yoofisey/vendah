@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatMoney } from "@/lib/format";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -86,7 +87,7 @@ export default async function TermsPage({
           <p>
             Read more on our{" "}
             <Link
-              href="/delivery"
+              href={resolveStorefrontHref(subdomain, "/delivery")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               delivery &amp; returns page
@@ -118,7 +119,7 @@ export default async function TermsPage({
           <p>
             See our full{" "}
             <Link
-              href="/privacy"
+              href={resolveStorefrontHref(subdomain, "/privacy")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               privacy policy
@@ -158,7 +159,7 @@ export default async function TermsPage({
           <p>
             You can also use our{" "}
             <Link
-              href="/contact"
+              href={resolveStorefrontHref(subdomain, "/contact")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               contact page
@@ -170,13 +171,13 @@ export default async function TermsPage({
 
       <div className="mt-12 flex flex-wrap gap-4">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
         >
           Back to shop
         </Link>
         <Link
-          href="/privacy"
+          href={resolveStorefrontHref(subdomain, "/privacy")}
           className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
         >
           Privacy policy

@@ -2,12 +2,14 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import {
   ensureWishlistSynced,
   getWishlist,
   subscribeWishlist,
 } from "@/lib/wishlist";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { ProductCard } from "../product-card";
 import type { Product } from "@/lib/types";
 
@@ -28,6 +30,7 @@ export function WishlistGrid({
     () => EMPTY
   );
   const ids = serverIds ?? localIds;
+  const { subdomain } = useParams<{ subdomain?: string }>();
 
   useEffect(() => {
     ensureWishlistSynced(tenantId);
@@ -48,7 +51,7 @@ export function WishlistGrid({
         {!serverIds && (
           <p className="mt-2 text-xs text-muted">
             <Link
-              href="/account"
+              href={resolveStorefrontHref(subdomain, "/account")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               Sign in
@@ -57,7 +60,7 @@ export function WishlistGrid({
           </p>
         )}
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="mt-6 inline-block rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
         >
           Browse products

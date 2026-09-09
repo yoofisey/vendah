@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { formatMoney } from "@/lib/format";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -188,13 +189,13 @@ export default async function DeliveryPage({
 
       <div className="mt-12 flex flex-wrap gap-4">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
         >
           Back to shop
         </Link>
         <Link
-          href="/contact"
+          href={resolveStorefrontHref(subdomain, "/contact")}
           className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
         >
           Contact us

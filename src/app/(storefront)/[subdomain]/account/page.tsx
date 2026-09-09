@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatMoney } from "@/lib/format";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AccountForm } from "./account-form";
@@ -101,7 +102,7 @@ export default async function AccountPage({
           <div className="mt-4 rounded-xl border border-dashed border-charcoal/20 bg-white p-12 text-center">
             <p className="text-sm text-muted">No orders yet.</p>
             <Link
-              href="/shop"
+              href={resolveStorefrontHref(subdomain, "/shop")}
               className="mt-4 inline-block rounded-lg bg-pine px-5 py-2 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
             >
               Start shopping

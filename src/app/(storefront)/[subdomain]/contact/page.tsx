@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +85,7 @@ export default async function ContactPage({
 
       <div className="mt-12">
         <Link
-          href="/faq"
+          href={resolveStorefrontHref(subdomain, "/faq")}
           className="text-sm font-semibold text-pine underline-offset-4 hover:underline"
         >
           Read our FAQs →

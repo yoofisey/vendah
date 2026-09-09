@@ -22,6 +22,7 @@ import {
 } from "@/lib/storefront";
 import { getCategoryPreset } from "@/lib/category-presets";
 import { getStorefrontUrl } from "@/lib/tenant";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { createClient } from "@/lib/supabase/server";
 import { WishlistButton } from "@/components/storefront/wishlist-button";
 import { WhatsAppShareButton } from "@/components/storefront/whatsapp-share";
@@ -145,14 +146,17 @@ export default async function ProductPage({
         }}
       />
       <nav className="mb-8 text-sm text-muted" aria-label="Breadcrumb">
-        <Link href="/shop" className="transition duration-150 hover:text-pine">
+        <Link
+          href={resolveStorefrontHref(subdomain, "/shop")}
+          className="transition duration-150 hover:text-pine"
+        >
           Shop
         </Link>
         {category && (
           <>
             <span className="mx-2.5">/</span>
             <Link
-              href={`/category/${category.slug}`}
+              href={resolveStorefrontHref(subdomain, `/category/${category.slug}`)}
               className="transition duration-150 hover:text-pine"
             >
               {category.name}
@@ -237,7 +241,7 @@ export default async function ProductPage({
           <p className="mt-4 text-xs text-muted">
             Delivery or pickup available —{" "}
             <Link
-              href="/delivery"
+              href={resolveStorefrontHref(subdomain, "/delivery")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               see delivery &amp; returns

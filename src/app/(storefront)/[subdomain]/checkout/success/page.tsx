@@ -6,6 +6,7 @@ import { MomoPoll } from "@/components/checkout/momo-poll";
 import { formatMoney } from "@/lib/format";
 import { finalizePaidOrder } from "@/lib/orders";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -147,7 +148,10 @@ export default async function CheckoutSuccessPage({
                   </p>
                 </div>
                 <Link
-                  href={`/track?ref=${encodeURIComponent(orderRef)}`}
+                  href={resolveStorefrontHref(
+                    subdomain,
+                    `/track?ref=${encodeURIComponent(orderRef)}`
+                  )}
                   className="rounded-lg bg-pine px-4 py-2 text-xs font-semibold text-white transition duration-150 hover:bg-pine-dark"
                 >
                   Track order
@@ -157,14 +161,14 @@ export default async function CheckoutSuccessPage({
           </div>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/shop"
+              href={resolveStorefrontHref(subdomain, "/shop")}
               className="inline-block rounded-lg bg-pine px-7 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
             >
               Continue shopping
             </Link>
             {!user && (
               <Link
-                href="/account"
+                href={resolveStorefrontHref(subdomain, "/account")}
                 className="inline-block rounded-lg border border-charcoal/15 bg-white px-7 py-3 text-sm font-semibold text-charcoal transition duration-150 hover:-translate-y-px hover:shadow-sm"
               >
                 Create an account to sync your wishlist across devices
@@ -185,7 +189,7 @@ export default async function CheckoutSuccessPage({
             order.
           </p>
           <Link
-            href="/checkout"
+            href={resolveStorefrontHref(subdomain, "/checkout")}
             className="mt-8 inline-block rounded-lg bg-pine px-7 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
           >
             Back to checkout

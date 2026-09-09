@@ -11,6 +11,7 @@ import {
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   MinusIcon,
   PlusIcon,
@@ -19,6 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { cartTotalMinor, writeCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/format";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { useCart } from "@/components/cart/use-cart";
 import type { CartItem } from "@/lib/cart";
 
@@ -69,6 +71,9 @@ export function CartDrawer({
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { subdomain } = useParams<{ subdomain?: string }>();
+  const shopHref = resolveStorefrontHref(subdomain, "/shop");
+  const checkoutHref = resolveStorefrontHref(subdomain, "/checkout");
 
   useEffect(() => {
     if (open) {
@@ -174,7 +179,7 @@ export function CartDrawer({
             </span>
             <p className="mt-4 text-sm text-muted">Your cart is empty.</p>
             <Link
-              href="/shop"
+              href={shopHref}
               onClick={onClose}
               className="mt-5 rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
             >
@@ -206,14 +211,14 @@ export function CartDrawer({
                 Delivery is calculated at checkout.
               </p>
               <Link
-                href="/checkout"
+                href={checkoutHref}
                 onClick={onClose}
                 className="mt-4 block rounded-lg bg-pine px-6 py-3 text-center text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
               >
                 Checkout
               </Link>
               <Link
-                href="/shop"
+                href={shopHref}
                 onClick={onClose}
                 className="mt-2 block rounded-lg border border-charcoal/15 bg-white px-6 py-3 text-center text-sm font-medium text-charcoal-soft transition duration-150 hover:bg-cream"
               >
@@ -238,6 +243,7 @@ function CartItemRow({
   onRemove: (productId: string) => void;
   onNavigate: () => void;
 }) {
+  const { subdomain } = useParams<{ subdomain?: string }>();
   return (
     <li className="flex gap-4 py-4">
       {item.image ? (
@@ -255,7 +261,7 @@ function CartItemRow({
       )}
       <div className="min-w-0 flex-1">
         <Link
-          href={`/products/${item.slug}`}
+          href={resolveStorefrontHref(subdomain, `/products/${item.slug}`)}
           onClick={onNavigate}
           className="line-clamp-2 text-sm font-medium leading-snug text-charcoal transition duration-150 hover:text-pine"
         >

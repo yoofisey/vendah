@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTenantBySubdomain } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -150,7 +151,7 @@ export default async function PrivacyPage({
           <p>
             You can also use our{" "}
             <Link
-              href="/contact"
+              href={resolveStorefrontHref(subdomain, "/contact")}
               className="font-medium text-pine underline-offset-2 hover:underline"
             >
               contact page
@@ -162,13 +163,13 @@ export default async function PrivacyPage({
 
       <div className="mt-12 flex flex-wrap gap-4">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
         >
           Back to shop
         </Link>
         <Link
-          href="/terms"
+          href={resolveStorefrontHref(subdomain, "/terms")}
           className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
         >
           Terms of Service

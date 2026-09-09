@@ -7,6 +7,7 @@ import {
 } from "@/lib/storefront";
 import { getCategoryPreset } from "@/lib/category-presets";
 import { getStorefrontUrl } from "@/lib/tenant";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -99,13 +100,13 @@ export default async function AboutPage({
 
       <div className="mt-12 flex flex-wrap gap-4">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
         >
           Shop the catalogue
         </Link>
         <Link
-          href="/contact"
+          href={resolveStorefrontHref(subdomain, "/contact")}
           className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
         >
           Contact us

@@ -17,6 +17,7 @@ import {
   parsePriceParam,
 } from "@/lib/storefront-filters";
 import { getCategoryPreset } from "@/lib/category-presets";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { ProductCard } from "../../product-card";
 import { ProductSort } from "../../product-sort";
 import { PriceRangeFilter } from "../../price-range-filter";
@@ -67,7 +68,7 @@ export default async function CategoryPage({
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
       <Link
-        href="/shop"
+        href={resolveStorefrontHref(subdomain, "/shop")}
         className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted transition duration-150 hover:text-pine"
       >
         <ArrowLeftIcon className="h-4 w-4" /> Back to shop
@@ -126,14 +127,17 @@ export default async function CategoryPage({
           </span>
           {hasActiveFilters ? (
             <Link
-              href={`/category/${category.slug}`}
+              href={resolveStorefrontHref(
+                subdomain,
+                `/category/${category.slug}`
+              )}
               className="mt-5 inline-block rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
             >
               Clear filters
             </Link>
           ) : (
             <Link
-              href="/shop"
+              href={resolveStorefrontHref(subdomain, "/shop")}
               className="mt-5 inline-block rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
             >
               Browse all products

@@ -67,7 +67,11 @@ export default async function StorefrontHome({
   return (
     <>
       <Hero tenant={tenant} preset={preset} />
-      <HomepageSections sections={sections} preset={preset} />
+      <HomepageSections
+        sections={sections}
+        preset={preset}
+        subdomain={tenant.subdomain ?? ""}
+      />
     </>
   );
 }

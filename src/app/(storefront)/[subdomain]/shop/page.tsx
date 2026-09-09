@@ -33,6 +33,7 @@ import { AttributeFilters } from "../attribute-filters";
 import { productGridClasses } from "../storefront-grid";
 import type { Product, Tenant } from "@/lib/types";
 import { getStorefrontUrl } from "@/lib/tenant";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +112,12 @@ export default async function ShopPage({
   return (
     <div>
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <CategoryBar categories={categories} sort={sort} layout={preset.layout} />
+        <CategoryBar
+          categories={categories}
+          sort={sort}
+          layout={preset.layout}
+          subdomain={subdomain}
+        />
 
         <div
           className={`mt-6 flex flex-wrap items-end justify-between gap-4 ${
@@ -155,21 +161,21 @@ export default async function ShopPage({
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               {hasActiveFilters ? (
                 <Link
-                  href="/shop"
+                  href={resolveStorefrontHref(subdomain, "/shop")}
                   className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
                 >
                   Clear filters
                 </Link>
               ) : (
                 <Link
-                  href="/"
+                  href={resolveStorefrontHref(subdomain, "/")}
                   className="rounded-lg bg-pine px-6 py-2.5 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
                 >
                   Back to home
                 </Link>
               )}
               <Link
-                href="/contact"
+                href={resolveStorefrontHref(subdomain, "/contact")}
                 className="rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
               >
                 Contact us
@@ -210,7 +216,7 @@ export default async function ShopPage({
 
       <ValueProps tenant={tenant} preset={preset} />
 
-      <AboutStrip tenant={tenant} preset={preset} />
+      <AboutStrip tenant={tenant} preset={preset} subdomain={subdomain} />
     </div>
   );
 }
@@ -219,10 +225,12 @@ function CategoryBar({
   categories,
   sort,
   layout,
+  subdomain,
 }: {
   categories: { id: string; slug: string; name: string }[];
   sort: string;
   layout: StorefrontLayout;
+  subdomain: string;
 }) {
   if (categories.length === 0) return null;
 
@@ -235,7 +243,7 @@ function CategoryBar({
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/category/${category.slug}`}
+            href={resolveStorefrontHref(subdomain, `/category/${category.slug}`)}
             className="whitespace-nowrap rounded-full border border-charcoal/15 bg-white px-3.5 py-1.5 text-xs font-medium text-charcoal-soft transition duration-150 hover:border-pine hover:text-pine"
           >
             {category.name}
@@ -258,7 +266,7 @@ function CategoryBar({
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/category/${category.slug}`}
+            href={resolveStorefrontHref(subdomain, `/category/${category.slug}`)}
             className="whitespace-nowrap rounded-full border border-charcoal/15 bg-cream px-4 py-2 text-sm font-medium text-charcoal-soft transition duration-150 hover:border-pine hover:text-pine"
           >
             {category.name}
@@ -376,7 +384,15 @@ function BestSellersSection({
   );
 }
 
-function AboutStrip({ tenant, preset }: { tenant: Tenant; preset: CategoryPreset }) {
+function AboutStrip({
+  tenant,
+  preset,
+  subdomain,
+}: {
+  tenant: Tenant;
+  preset: CategoryPreset;
+  subdomain: string;
+}) {
   const CATEGORY_ABOUT: Record<string, { storyLabel: string; detailLabel: string }> = {
     clothing: { storyLabel: "Our collections", detailLabel: "Size guide" },
     cosmetics: { storyLabel: "Our ingredients", detailLabel: "Beauty tips" },
@@ -404,13 +420,13 @@ function AboutStrip({ tenant, preset }: { tenant: Tenant; preset: CategoryPreset
         </div>
         <div className="flex shrink-0 flex-wrap gap-4">
           <Link
-            href="/about"
+            href={resolveStorefrontHref(subdomain, "/about")}
             className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-charcoal shadow-lg transition duration-200 hover:bg-gold-dark hover:text-white"
           >
             {ctas.storyLabel}
           </Link>
           <Link
-            href="/delivery"
+            href={resolveStorefrontHref(subdomain, "/delivery")}
             className="rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-white/10"
           >
             {ctas.detailLabel}

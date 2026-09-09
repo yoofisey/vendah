@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export function ShopNowButton({
   shopName,
@@ -14,17 +15,19 @@ export function ShopNowButton({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const timers = useRef<number[]>([]);
+  const { subdomain } = useParams<{ subdomain?: string }>();
+  const shopHref = resolveStorefrontHref(subdomain, "/shop");
 
   useEffect(() => {
-    router.prefetch("/shop");
+    router.prefetch(shopHref);
     const pending = timers.current;
     return () => pending.forEach((t) => window.clearTimeout(t));
-  }, [router]);
+  }, [router, shopHref]);
 
   const handleClick = () => {
     if (loading) return;
     setLoading(true);
-    timers.current.push(window.setTimeout(() => router.push("/shop"), 1100));
+    timers.current.push(window.setTimeout(() => router.push(shopHref), 1100));
   };
 
   return (

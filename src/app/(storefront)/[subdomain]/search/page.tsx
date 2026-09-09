@@ -12,6 +12,7 @@ import { ProductCard } from "../product-card";
 import { productGridClasses } from "../storefront-grid";
 import { SearchForm } from "./search-form";
 import { getStorefrontUrl } from "@/lib/tenant";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,7 @@ export default async function SearchPage({
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
       <Link
-        href="/shop"
+        href={resolveStorefrontHref(subdomain, "/shop")}
         className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted transition duration-150 hover:text-pine"
       >
         <ArrowLeftIcon className="h-4 w-4" /> Back to shop
@@ -107,7 +108,7 @@ export default async function SearchPage({
           <p className="mt-8 rounded-2xl border border-dashed border-charcoal/20 bg-white p-14 text-center text-sm text-muted shadow-sm">
             No products match your search. Try a different keyword or{" "}
             <Link
-              href="/shop"
+              href={resolveStorefrontHref(subdomain, "/shop")}
               className="font-medium text-pine underline-offset-4 hover:underline"
             >
               browse all products

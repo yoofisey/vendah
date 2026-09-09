@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { HomepageSection } from "@/lib/homepage-sections";
 import type { CategoryPreset } from "@/lib/category-presets";
 import { getFeaturedProducts } from "@/lib/storefront";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 import { ProductCard } from "@/app/(storefront)/[subdomain]/product-card";
 import { productGridClasses } from "@/app/(storefront)/[subdomain]/storefront-grid";
 import { NewsletterForm } from "./newsletter-form";
@@ -9,16 +10,23 @@ import { NewsletterForm } from "./newsletter-form";
 export function HomepageSections({
   sections,
   preset,
+  subdomain,
 }: {
   sections: HomepageSection[];
   preset?: CategoryPreset;
+  subdomain: string;
 }) {
   if (sections.length === 0) return null;
 
   return (
     <>
       {sections.map((section) => (
-        <SectionRenderer key={section.id} section={section} preset={preset} />
+        <SectionRenderer
+          key={section.id}
+          section={section}
+          preset={preset}
+          subdomain={subdomain}
+        />
       ))}
     </>
   );
@@ -27,21 +35,23 @@ export function HomepageSections({
 function SectionRenderer({
   section,
   preset,
+  subdomain,
 }: {
   section: HomepageSection;
   preset?: CategoryPreset;
+  subdomain: string;
 }) {
   switch (section.section_type) {
     case "hero":
-      return <HeroSection section={section} preset={preset} />;
+      return <HeroSection section={section} preset={preset} subdomain={subdomain} />;
     case "featured_products":
-      return <FeaturedProductsSection section={section} preset={preset} />;
+      return <FeaturedProductsSection section={section} preset={preset} subdomain={subdomain} />;
     case "banner":
-      return <BannerSection section={section} preset={preset} />;
+      return <BannerSection section={section} preset={preset} subdomain={subdomain} />;
     case "text":
-      return <TextSection section={section} />;
+      return <TextSection section={section} subdomain={subdomain} />;
     case "image_text":
-      return <ImageTextSection section={section} />;
+      return <ImageTextSection section={section} subdomain={subdomain} />;
     case "newsletter":
       return <NewsletterSection section={section} preset={preset} />;
     default:
@@ -52,9 +62,11 @@ function SectionRenderer({
 async function FeaturedProductsSection({
   section,
   preset,
+  subdomain,
 }: {
   section: HomepageSection;
   preset?: CategoryPreset;
+  subdomain: string;
 }) {
   const products = await getFeaturedProducts(section.tenant_id);
   if (products.length === 0) return null;
@@ -83,7 +95,7 @@ async function FeaturedProductsSection({
       </div>
       <div className="mt-8 text-center">
         <Link
-          href="/shop"
+          href={resolveStorefrontHref(subdomain, "/shop")}
           className="inline-block rounded-lg border border-charcoal/15 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:border-pine hover:text-pine"
         >
           View all products
@@ -96,9 +108,11 @@ async function FeaturedProductsSection({
 function HeroSection({
   section,
   preset,
+  subdomain,
 }: {
   section: HomepageSection;
   preset?: CategoryPreset;
+  subdomain: string;
 }) {
   const bgColor = preset?.palette.primary ?? "#1b4332";
 
@@ -127,7 +141,7 @@ function HeroSection({
         )}
         {section.link_url && section.link_label && (
           <Link
-            href={section.link_url}
+            href={resolveStorefrontHref(subdomain, section.link_url)}
             className="mt-8 inline-block rounded-lg bg-gold px-8 py-3.5 text-sm font-semibold text-charcoal transition duration-150 hover:bg-gold/90"
           >
             {section.link_label}
@@ -141,9 +155,11 @@ function HeroSection({
 function BannerSection({
   section,
   preset,
+  subdomain,
 }: {
   section: HomepageSection;
   preset?: CategoryPreset;
+  subdomain: string;
 }) {
   const btnBg = preset?.palette.accent ?? "#d4a017";
 
@@ -170,7 +186,7 @@ function BannerSection({
           )}
           {section.link_url && section.link_label && (
             <Link
-              href={section.link_url}
+              href={resolveStorefrontHref(subdomain, section.link_url)}
               className="mt-6 inline-block rounded-lg px-6 py-2.5 text-sm font-semibold text-charcoal transition duration-150 hover:opacity-90"
               style={{ backgroundColor: btnBg }}
             >
@@ -183,7 +199,13 @@ function BannerSection({
   );
 }
 
-function TextSection({ section }: { section: HomepageSection }) {
+function TextSection({
+  section,
+  subdomain,
+}: {
+  section: HomepageSection;
+  subdomain: string;
+}) {
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       {section.title && (
@@ -201,7 +223,7 @@ function TextSection({ section }: { section: HomepageSection }) {
       )}
       {section.link_url && section.link_label && (
         <Link
-          href={section.link_url}
+          href={resolveStorefrontHref(subdomain, section.link_url)}
           className="mt-6 inline-block text-sm font-semibold text-pine underline-offset-4 hover:underline"
         >
           {section.link_label}
@@ -211,7 +233,13 @@ function TextSection({ section }: { section: HomepageSection }) {
   );
 }
 
-function ImageTextSection({ section }: { section: HomepageSection }) {
+function ImageTextSection({
+  section,
+  subdomain,
+}: {
+  section: HomepageSection;
+  subdomain: string;
+}) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <div className="grid gap-8 sm:grid-cols-2">
@@ -238,7 +266,7 @@ function ImageTextSection({ section }: { section: HomepageSection }) {
           )}
           {section.link_url && section.link_label && (
             <Link
-              href={section.link_url}
+              href={resolveStorefrontHref(subdomain, section.link_url)}
               className="mt-6 inline-block text-sm font-semibold text-pine underline-offset-4 hover:underline"
             >
               {section.link_label}
