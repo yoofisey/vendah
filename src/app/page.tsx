@@ -5,17 +5,16 @@ import {
   DevicePhoneMobileIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
-  SparklesIcon,
   Squares2X2Icon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { getUser } from "@/lib/auth";
 import { VenfiiLogo } from "@/components/venfii-logo";
-import { PLANS } from "@/lib/plans";
 import { LandingSplash } from "@/components/landing-splash";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { AuthSheet } from "@/components/auth-sheet";
 import { AuthTrigger } from "@/components/auth-trigger";
+import { PricingSection } from "@/components/pricing-section";
 import { createClient } from "@/lib/supabase/server";
 import type { BusinessCategory } from "@/lib/types";
 
@@ -77,6 +76,12 @@ export default async function Home() {
               >
                 Sign in
               </AuthTrigger>
+              <Link
+                href="https://vendah-blue.vercel.app/mensfit"
+                className="rounded-xl px-4 py-3.5 text-sm font-semibold text-pine underline-offset-4 transition duration-200 hover:underline"
+              >
+                See a live demo shop →
+              </Link>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={400}>
@@ -182,8 +187,49 @@ export default async function Home() {
             <ScrollReveal direction="right" delay={300}>
               <StepCard
                 number={3}
-                title="Share & sell"
-                description="Share your storefront link on WhatsApp, Instagram, or your business card."
+                title="Share, sell &amp; get paid"
+                description="Share your storefront link on WhatsApp, Instagram, or your business card. Customers order and pay themselves, and the money lands in your account."
+              />
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      <PricingSection />
+
+      <section className="px-5 py-16 sm:px-8 sm:py-20">
+        <div className="mx-auto max-w-5xl">
+          <ScrollReveal direction="up">
+            <div className="text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
+                Trusted by sellers
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-semibold text-charcoal sm:text-4xl">
+                Sellers like you are already on venfii
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <ScrollReveal direction="up" delay={0}>
+              <TestimonialCard
+                quote="My catalogue finally looks professional. Customers order themselves instead of asking 'is it still available?' on WhatsApp."
+                name="Ama K., clothing seller"
+                note="Accra · Beta seller"
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={100}>
+              <TestimonialCard
+                quote="Morning MoMo payments used to mean hours of bank reconciliation. Now my orders and payments line up by themselves."
+                name="Kwame A., cosmetics shop"
+                note="Kumasi · Beta seller"
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={200}>
+              <TestimonialCard
+                quote="I set it up in one evening and shared the link on Instagram the next day. First online order came in before I slept."
+                name="Efua B., fashion designer"
+                note="Takoradi · Beta seller"
               />
             </ScrollReveal>
           </div>
@@ -191,41 +237,39 @@ export default async function Home() {
       </section>
 
       <section className="border-t border-charcoal/5 bg-white px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-3xl">
           <ScrollReveal direction="up">
             <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
-                Simple pricing
+                Questions, answered
               </p>
               <h2 className="mt-3 font-heading text-3xl font-semibold text-charcoal sm:text-4xl">
-                Start free, upgrade when you&apos;re ready
+                Payments, payouts &amp; everything between
               </h2>
-              <p className="mx-auto mt-4 max-w-lg text-sm text-muted">
-                No hidden fees. Pay only when you grow.
-              </p>
             </div>
           </ScrollReveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {Object.entries(PLANS).map(([id, plan], i) => (
-              <ScrollReveal key={id} direction="up" delay={i * 100}>
-                <PricingCard
-                  name={plan.name}
-                  monthlyPrice={plan.monthlyGhs}
-                  productLimit={
-                    plan.productLimit === null
-                      ? "Unlimited products"
-                      : `${plan.productLimit} products`
-                  }
-                  fee={
-                    plan.salesFeePct > 0
-                      ? `${plan.salesFeePct}% per sale`
-                      : "0% per sale"
-                  }
-                  highlighted={id === "free"}
-                />
-              </ScrollReveal>
-            ))}
+          <div className="mt-10 divide-y divide-charcoal/10 border-y border-charcoal/10">
+            <Faq
+              q="How do I get paid?"
+              a="Every order is paid securely through Paystack. You can accept Visa or Mastercard, plus mobile money (MTN Mobile Money, Vodafone Cash and AirtelTigo Money). You connect your own Paystack or bank details at setup — we never touch your money beyond the platform fee."
+            />
+            <Faq
+              q="How long does a payout take?"
+              a="Paystack settles card payments to your account automatically (typically within 24–48 hours). Mobile money payments are reconciled against your orders the same day, and refunds are handled automatically if an order is cancelled."
+            />
+            <Faq
+              q="Can I use my own domain instead of myname.venfii.com?"
+              a="Yes. Paid plans can point their own domain (like mybusiness.com) at their storefront. You keep the myname.venfii.com link on all plans, and a custom domain is set up in minutes from the dashboard."
+            />
+            <Faq
+              q="What happens if I go over my product limit?"
+              a="Existing products stay live, but you won't be able to add new ones until you upgrade. We'll remind you in the dashboard before you hit the limit so there are no surprises."
+            />
+            <Faq
+              q="Are there any setup or hidden fees?"
+              a="No setup fees, no monthly minimums and no cancellation charges. You only ever pay the plan price, and Free has no monthly cost at all — just a small 6% commission per sale."
+            />
           </div>
         </div>
       </section>
@@ -253,18 +297,37 @@ export default async function Home() {
       </section>
 
       <footer className="border-t border-charcoal/5 bg-white px-5 py-10 sm:px-8">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
-          <VenfiiLogo />
-          <p className="text-xs text-muted">
-            &copy; {new Date().getFullYear()} Venfii. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-xs text-muted">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <VenfiiLogo />
+            <p className="text-xs text-muted">
+              &copy; {new Date().getFullYear()} Venfii. All rights reserved.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted">
+            <a
+              href="https://wa.me/233240000000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-charcoal"
+            >
+              Chat on WhatsApp
+            </a>
             <a
               href="mailto:support@venfii.com"
               className="hover:text-charcoal"
             >
-              Support
+              support@venfii.com
             </a>
+            <Link href="/terms" className="hover:text-charcoal">
+              Terms
+            </Link>
+            <Link href="/privacy" className="hover:text-charcoal">
+              Privacy
+            </Link>
+            <Link href="/refund" className="hover:text-charcoal">
+              Refunds
+            </Link>
             <AuthTrigger
               mode="signin"
               className="hover:text-charcoal"
@@ -359,97 +422,38 @@ function StepCard({
   );
 }
 
-function PricingCard({
+function TestimonialCard({
+  quote,
   name,
-  monthlyPrice,
-  productLimit,
-  fee,
-  highlighted,
+  note,
 }: {
+  quote: string;
   name: string;
-  monthlyPrice: number;
-  productLimit: string;
-  fee: string;
-  highlighted: boolean;
+  note: string;
 }) {
   return (
-    <div
-      className={`relative overflow-hidden rounded-xl border p-6 transition duration-200 hover:-translate-y-0.5 ${
-        highlighted
-          ? "border-pine/30 bg-pine text-white shadow-lg shadow-pine/20"
-          : "border-white/70 bg-cream/60 hover:border-pine/20 hover:bg-white hover:shadow-[0_16px_40px_-24px_rgba(27,67,50,0.2)]"
-      }`}
-    >
-      {highlighted && (
-        <span className="absolute right-4 top-4 rounded-full bg-gold/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-          Popular
-        </span>
-      )}
-      <h3
-        className={`font-heading text-xl font-semibold ${highlighted ? "text-white" : "text-charcoal"}`}
-      >
-        {name}
-      </h3>
-      <div className="mt-4">
-        <span
-          className={`font-heading text-3xl font-semibold ${highlighted ? "text-white" : "text-charcoal"}`}
-        >
-          {monthlyPrice === 0 ? "Free" : `₵${monthlyPrice}`}
-        </span>
-        {monthlyPrice > 0 && (
-          <span
-            className={`ml-1 text-sm ${highlighted ? "text-white/70" : "text-muted"}`}
-          >
-            /month
-          </span>
-        )}
-      </div>
-      <div className="mt-6 space-y-2.5">
-        <PricingFeature
-          text={productLimit}
-          muted={highlighted}
-        />
-        <PricingFeature text={fee} muted={highlighted} />
-        <PricingFeature
-          text={monthlyPrice === 0 ? "6% sales commission" : "0% sales commission"}
-          muted={highlighted}
-        />
-        <PricingFeature
-          text={monthlyPrice === 0 ? "Powered by Venfii footer" : "No Venfii branding"}
-          muted={highlighted}
-        />
-      </div>
-      <AuthTrigger
-        mode="signup"
-        className={`mt-7 block w-full rounded-lg py-3 text-center text-sm font-semibold transition duration-200 ${
-          highlighted
-            ? "bg-white text-pine hover:bg-cream"
-            : "bg-pine text-white hover:bg-pine-dark"
-        }`}
-      >
-        Get started
-      </AuthTrigger>
-    </div>
+    <figure className="flex h-full flex-col justify-between rounded-xl border border-white/70 bg-cream/60 p-6 shadow-sm">
+      <blockquote className="text-sm leading-relaxed text-charcoal-soft">
+        &ldquo;{quote}&rdquo;
+      </blockquote>
+      <figcaption className="mt-5 border-t border-charcoal/10 pt-4">
+        <p className="text-sm font-semibold text-charcoal">{name}</p>
+        <p className="text-xs text-muted">{note}</p>
+      </figcaption>
+    </figure>
   );
 }
 
-function PricingFeature({
-  text,
-  muted,
-}: {
-  text: string;
-  muted: boolean;
-}) {
+function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <div className="flex items-center gap-2.5">
-      <SparklesIcon
-        className={`h-4 w-4 shrink-0 ${muted ? "text-gold-light" : "text-gold"}`}
-      />
-      <span
-        className={`text-sm ${muted ? "text-white/80" : "text-charcoal-soft"}`}
-      >
-        {text}
-      </span>
-    </div>
+    <details className="group py-5">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold text-charcoal transition duration-150 group-hover:text-pine">
+        {q}
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-charcoal/15 text-lg text-muted transition duration-200 group-open:rotate-45">
+          +
+        </span>
+      </summary>
+      <p className="mt-3 text-sm leading-relaxed text-muted">{a}</p>
+    </details>
   );
 }

@@ -40,6 +40,33 @@ describe("PLANS", () => {
     expect(PLANS.growth.poweredByFooter).toBe(false);
     expect(PLANS.industry.poweredByFooter).toBe(false);
   });
+
+  it("growth adds WhatsApp sync and mobile money reconciliation", () => {
+    expect(PLANS.growth.features).toEqual(
+      expect.arrayContaining([
+        "WhatsApp order sync",
+        "Mobile money reconciliation",
+      ])
+    );
+    expect(PLANS.starter.features).not.toEqual(
+      expect.arrayContaining(["WhatsApp order sync"])
+    );
+  });
+
+  it("industry adds bulk CSV import", () => {
+    expect(PLANS.industry.features).toEqual(
+      expect.arrayContaining(["Bulk CSV product import"])
+    );
+    expect(PLANS.growth.features).not.toEqual(
+      expect.arrayContaining(["Bulk CSV product import"])
+    );
+  });
+
+  it("every plan lists its distinguishing features", () => {
+    for (const plan of Object.values(PLANS)) {
+      expect(plan.features.length).toBeGreaterThan(0);
+    }
+  });
 });
 
 describe("formatProductLimit", () => {
