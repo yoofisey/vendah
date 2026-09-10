@@ -12,9 +12,11 @@ import { CheckoutModal } from "@/components/checkout/checkout-modal";
 export function CartView({
   tenantId,
   deliveryFeeMinor,
+  shopName,
 }: {
   tenantId: string;
   deliveryFeeMinor: number;
+  shopName?: string;
 }) {
   const items = useCart(tenantId);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -54,6 +56,7 @@ export function CartView({
           <CheckoutModal
             tenantId={tenantId}
             deliveryFeeMinor={deliveryFeeMinor}
+            shopName={shopName}
             onClose={() => setCheckoutOpen(false)}
           />
         )}
@@ -147,6 +150,7 @@ export function CartView({
         <CheckoutModal
           tenantId={tenantId}
           deliveryFeeMinor={deliveryFeeMinor}
+          shopName={shopName}
           onClose={() => setCheckoutOpen(false)}
         />
       )}

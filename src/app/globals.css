@@ -23,6 +23,10 @@
 
   --animate-float: float-soft 5s ease-in-out infinite;
   --animate-step-in: step-in 0.35s ease-out;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-sheet-in: sheet-in 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-status-in: status-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-processing-ring: ring-spin 1.5s linear infinite;
 
   @keyframes float-soft {
     0%,
@@ -42,6 +46,45 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes status-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+      filter: blur(3px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes ring-spin {
+    to {
+      transform: rotate(360deg);
     }
   }
 }
@@ -122,7 +165,11 @@ input[type="password"]::-ms-clear {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-float,
-  .animate-step-in {
+  .animate-step-in,
+  .animate-fade-in,
+  .animate-sheet-in,
+  .animate-status-in,
+  .animate-processing-ring {
     animation: none;
   }
 

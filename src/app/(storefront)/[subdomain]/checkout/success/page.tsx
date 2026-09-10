@@ -177,7 +177,12 @@ export default async function CheckoutSuccessPage({
           </div>
         </div>
       ) : momoPending && ref ? (
-        <MomoPoll reference={ref} orderRef={orderRef} subdomain={subdomain} />
+        <MomoPoll
+            reference={ref}
+            orderRef={orderRef}
+            subdomain={subdomain}
+            shopName={tenant.name}
+          />
       ) : (
         <div className="rounded-2xl border border-charcoal/10 bg-white p-10 text-center shadow-lg sm:p-12">
           <h1 className="font-heading text-3xl font-semibold text-charcoal">

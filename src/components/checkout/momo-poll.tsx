@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CheckoutLoading, type CheckoutMethod } from "@/components/checkout/checkout-loading";
+import { resolveStorefrontHref } from "@/lib/storefront-href";
 
 const MAX_POLLS = 60;
 const POLL_INTERVAL = 5_000;
@@ -11,10 +13,14 @@ export function MomoPoll({
   reference,
   orderRef,
   subdomain,
+  shopName,
+  method = "mtn",
 }: {
   reference: string;
   orderRef: string | null;
   subdomain: string;
+  shopName?: string;
+  method?: CheckoutMethod;
 }) {
   const router = useRouter();
   const [count, setCount] = useState(0);
@@ -54,58 +60,42 @@ export function MomoPoll({
   const progress = Math.min((count / MAX_POLLS) * 100, 100);
 
   return (
-    <div className="rounded-2xl border border-charcoal/10 bg-white p-10 text-center shadow-lg sm:p-12">
-      <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold/20">
-        <span className="h-6 w-6 animate-pulse rounded-full bg-gold" />
-      </span>
-      <h1 className="mt-5 font-heading text-3xl font-semibold text-charcoal">
-        {expired ? "Taking longer than expected" : "Waiting for payment approval"}
-      </h1>
-      <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
-        {expired
-          ? "We haven&apos;t received confirmation yet. This can take a few minutes with some networks."
-          : "Your order is on hold until your mobile money network confirms the payment. Check the prompt on your phone and approve it."}
-      </p>
-      {!expired && (
-        <div className="mx-auto mt-6 max-w-xs">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-charcoal/10">
-            <div
-              className="h-full rounded-full bg-gold transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="mt-2 text-xs text-muted">
-            Waiting for mobile money confirmation...
-          </p>
+    <CheckoutLoading
+      variant="waiting"
+      method={method}
+      amountMinor={0}
+      showAmount={false}
+      shopName={shopName}
+      subdomain={subdomain}
+      methodLabel="Mobile money"
+      progress={progress}
+      expired={expired}
+      footer={
+        <div className="flex flex-col items-stretch gap-2.5">
+          {expired && (
+            <button
+              onClick={() => {
+                setExpired(false);
+                setCount(0);
+              }}
+              className="w-full rounded-full bg-pine px-6 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark hover:shadow-lg"
+            >
+              Try again
+            </button>
+          )}
+          {orderRef && (
+            <Link
+              href={resolveStorefrontHref(
+                subdomain,
+                `/track?ref=${encodeURIComponent(orderRef)}`
+              )}
+              className="w-full rounded-full border border-charcoal/15 bg-white px-6 py-3 text-center text-sm font-semibold text-charcoal transition duration-150 hover:-translate-y-px hover:shadow-sm"
+            >
+              Track order
+            </Link>
+          )}
         </div>
-      )}
-      {orderRef && (
-        <div className="mt-8 rounded-2xl bg-cream p-6">
-          <p className="text-xs text-muted">Order reference</p>
-          <p className="mt-0.5 font-mono text-base font-bold text-charcoal">
-            {orderRef}
-          </p>
-        </div>
-      )}
-      <div className="mt-8 flex flex-col items-center gap-3">
-        {expired && (
-          <button
-            onClick={() => {
-              setExpired(false);
-              setCount(0);
-            }}
-            className="inline-block rounded-lg bg-pine px-7 py-3 text-sm font-semibold text-white transition duration-150 hover:bg-pine-dark"
-          >
-            Retry
-          </button>
-        )}
-        <Link
-          href={`/track?ref=${encodeURIComponent(orderRef ?? "")}`}
-          className="inline-block rounded-lg border border-charcoal/15 bg-white px-7 py-3 text-sm font-semibold text-charcoal transition duration-150 hover:-translate-y-px hover:shadow-sm"
-        >
-          Track order
-        </Link>
-      </div>
-    </div>
+      }
+    />
   );
 }

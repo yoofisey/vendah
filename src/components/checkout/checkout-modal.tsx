@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import {
   ArrowLeftIcon,
@@ -11,6 +12,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { submitCheckout, type CheckoutState } from "@/app/(storefront)/[subdomain]/checkout/actions";
+import { CheckoutLoading, type CheckoutMethod } from "@/components/checkout/checkout-loading";
 import { cartTotalMinor, writeCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/format";
 import { useCart } from "@/components/cart/use-cart";
@@ -68,12 +70,15 @@ const inputClass =
 export function CheckoutModal({
   tenantId,
   deliveryFeeMinor,
+  shopName,
   onClose,
 }: {
   tenantId: string;
   deliveryFeeMinor: number;
+  shopName?: string;
   onClose: () => void;
 }) {
+  const { subdomain } = useParams<{ subdomain: string }>();
   const [state, action, pending] = useActionState(submitCheckout, initialState);
   const items = useCart(tenantId);
   const [step, setStep] = useState(0);
@@ -515,6 +520,16 @@ export function CheckoutModal({
           </div>
         </form>
       </div>
+      {pending && (
+        <CheckoutLoading
+          variant="overlay"
+          method={method as CheckoutMethod}
+          amountMinor={total}
+          currency={items[0]?.currency ?? "GHS"}
+          shopName={shopName}
+          subdomain={subdomain}
+        />
+      )}
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   submitCheckout,
   type CheckoutState,
 } from "@/app/(storefront)/[subdomain]/checkout/actions";
+import { CheckoutLoading, type CheckoutMethod } from "@/components/checkout/checkout-loading";
 import { cartTotalMinor } from "@/lib/cart";
 import { useCart } from "@/components/cart/use-cart";
 import { formatMoney } from "@/lib/format";
@@ -48,13 +50,16 @@ export function CheckoutForm({
   taxRates,
   shippingZones,
   savedAddresses = [],
+  shopName,
 }: {
   tenantId: string;
   deliveryFeeMinor: number;
   taxRates: Array<{ id: string; name: string; rate_pct: number; applies_to: string }>;
   shippingZones: Array<{ id: string; name: string; fee_minor: number; free_above_minor: number | null }>;
   savedAddresses?: SavedAddress[];
+  shopName?: string;
 }) {
+  const { subdomain } = useParams<{ subdomain: string }>();
   const [state, action, pending] = useActionState(submitCheckout, initialState);
   const items = useCart(tenantId);
   const hasItems = items.length > 0;
@@ -425,6 +430,17 @@ export function CheckoutForm({
           ? "No online payment needed — pay in cash when your order arrives."
           : "Payments are processed securely by Paystack."}
       </p>
+
+      {pending && hasItems && (
+        <CheckoutLoading
+          variant="overlay"
+          method={method as CheckoutMethod}
+          amountMinor={total}
+          currency={currency}
+          shopName={shopName}
+          subdomain={subdomain}
+        />
+      )}
     </form>
   );
 }

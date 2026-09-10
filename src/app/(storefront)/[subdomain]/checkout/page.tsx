@@ -54,6 +54,7 @@ export default async function CheckoutPage({
         taxRates={taxRates}
         shippingZones={shippingZones}
         savedAddresses={addresses}
+        shopName={tenant.name}
       />
     </div>
   );

@@ -16,7 +16,7 @@ export default async function CartPage({
       <h1 className="font-heading text-3xl font-semibold text-charcoal">
         Your cart
       </h1>
-      <CartView tenantId={tenant.id} deliveryFeeMinor={tenant.delivery_fee_minor ?? 0} />
+      <CartView tenantId={tenant.id} deliveryFeeMinor={tenant.delivery_fee_minor ?? 0} shopName={tenant.name} />
     </div>
   );
 }
