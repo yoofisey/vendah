@@ -14,6 +14,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://vendah-blue.vercel.app"
+  ),
   title: "venfii — sell smarter",
   description:
     "Launch a branded storefront and sell on WhatsApp, Instagram and your business card.",

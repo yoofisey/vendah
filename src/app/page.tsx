@@ -14,6 +14,7 @@ import { LandingSplash } from "@/components/landing-splash";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { AuthSheet } from "@/components/auth-sheet";
 import { AuthTrigger } from "@/components/auth-trigger";
+import { PaymentProviders } from "@/components/payment-providers";
 import { PricingSection } from "@/components/pricing-section";
 import { createClient } from "@/lib/supabase/server";
 import type { BusinessCategory } from "@/lib/types";
@@ -194,6 +195,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <PaymentProviders />
 
       <PricingSection />
 
