@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { TenantTheme } from "@/components/tenant-theme";
 import { PWAInstallPrompt } from "@/components/storefront/pwa-install-prompt";
 import { CartDrawerProvider } from "@/components/storefront/cart-drawer";
+import { Toaster } from "@/components/toast";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import {
   getTenantBusinessCategorySlug,
@@ -87,6 +88,7 @@ export default async function StorefrontLayout({
         <PWAInstallPrompt />
         <StorefrontFooter tenant={tenant} />
       </CartDrawerProvider>
+      <Toaster />
     </div>
   );
 }

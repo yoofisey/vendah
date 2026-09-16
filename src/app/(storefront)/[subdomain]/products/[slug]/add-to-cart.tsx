@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { readCart, writeCart } from "@/lib/cart";
+import { notify } from "@/components/toast";
 import type { Product } from "@/lib/types";
 
 export function AddToCart({
@@ -44,6 +45,7 @@ export function AddToCart({
       });
     }
     writeCart(tenantId, items);
+    notify({ kind: "cart", title: "Added to cart", description: product.name });
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1600);
   }

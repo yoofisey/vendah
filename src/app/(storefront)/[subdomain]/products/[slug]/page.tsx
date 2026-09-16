@@ -224,6 +224,7 @@ export default async function ProductPage({
             <WishlistButton
               tenantId={tenant.id}
               productId={product.id}
+              productName={product.name}
               className="h-11 w-11"
             />
             <WhatsAppShareButton

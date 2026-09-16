@@ -11,16 +11,19 @@ import {
   toggleWishlistItem,
 } from "@/lib/wishlist";
 import { toggleWishlistOnServer } from "@/app/(storefront)/[subdomain]/wishlist/actions";
+import { notify } from "@/components/toast";
 
 const EMPTY: string[] = [];
 
 export function WishlistButton({
   tenantId,
   productId,
+  productName,
   className = "",
 }: {
   tenantId: string;
   productId: string;
+  productName?: string;
   className?: string;
 }) {
   const ids = useSyncExternalStore(
@@ -40,7 +43,14 @@ export function WishlistButton({
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
       aria-pressed={wishlisted}
       onClick={() => {
-        toggleWishlistItem(tenantId, productId);
+        const next = toggleWishlistItem(tenantId, productId);
+        notify({
+          kind: "wishlist",
+          title: next.includes(productId)
+            ? "Added to wishlist"
+            : "Removed from wishlist",
+          description: productName,
+        });
         if (getWishlistCustomerEmail()) {
           toggleWishlistOnServer(tenantId, productId).catch(() => {});
         }

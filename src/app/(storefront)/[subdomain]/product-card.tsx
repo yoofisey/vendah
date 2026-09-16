@@ -103,7 +103,11 @@ export function ProductCard({
           </span>
         )}
         <span className="absolute right-2.5 top-2.5">
-          <WishlistButton tenantId={tenantId} productId={product.id} />
+          <WishlistButton
+            tenantId={tenantId}
+            productId={product.id}
+            productName={product.name}
+          />
         </span>
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
