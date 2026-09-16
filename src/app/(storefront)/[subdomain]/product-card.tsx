@@ -69,47 +69,52 @@ export function ProductCard({
 
   return (
     <div className={CARD_CLASSES[variant]}>
-      <Link
-        href={productHref}
+      <div
         className={`relative block w-full bg-cream-soft ${
           variant === "compact" ? "aspect-[1/1]" : "aspect-[4/5]"
         }`}
       >
-        {image ? (
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <span className="flex h-full items-center justify-center text-sm text-muted">
-            No image
-          </span>
-        )}
-        {soldOut && (
-          <span className="absolute inset-0 flex items-center justify-center bg-white/60 text-sm font-semibold uppercase tracking-wide text-charcoal">
-            Sold out
-          </span>
-        )}
-        {lowStock && (
-          <span
-            className={`absolute left-2.5 top-2.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 ${
-              variant === "compact" ? "px-2 py-0.5 text-[10px]" : ""
-            }`}
-          >
-            Low stock
-          </span>
-        )}
-        <span className="absolute right-2.5 top-2.5">
+        <Link
+          href={productHref}
+          aria-label={product.name}
+          className="absolute inset-0"
+        >
+          {image ? (
+            <Image
+              src={image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover transition duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <span className="flex h-full items-center justify-center text-sm text-muted">
+              No image
+            </span>
+          )}
+          {soldOut && (
+            <span className="absolute inset-0 flex items-center justify-center bg-white/60 text-sm font-semibold uppercase tracking-wide text-charcoal">
+              Sold out
+            </span>
+          )}
+          {lowStock && (
+            <span
+              className={`absolute left-2.5 top-2.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 ${
+                variant === "compact" ? "px-2 py-0.5 text-[10px]" : ""
+              }`}
+            >
+              Low stock
+            </span>
+          )}
+        </Link>
+        <span className="absolute right-2.5 top-2.5 z-10">
           <WishlistButton
             tenantId={tenantId}
             productId={product.id}
             productName={product.name}
           />
         </span>
-      </Link>
+      </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <Link
           href={productHref}
