@@ -21,6 +21,7 @@ import {
 import { cartTotalMinor, writeCart } from "@/lib/cart";
 import { formatMoney } from "@/lib/format";
 import { resolveStorefrontHref } from "@/lib/storefront-href";
+import { startCheckoutTransition } from "@/components/checkout/checkout-transition";
 import { useCart } from "@/components/cart/use-cart";
 import type { CartItem } from "@/lib/cart";
 
@@ -212,7 +213,10 @@ export function CartDrawer({
               </p>
               <Link
                 href={checkoutHref}
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  startCheckoutTransition();
+                }}
                 className="mt-4 block rounded-lg bg-pine px-6 py-3 text-center text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark hover:shadow-lg"
               >
                 Checkout
