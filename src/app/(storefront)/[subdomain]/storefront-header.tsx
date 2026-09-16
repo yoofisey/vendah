@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useCartCount } from "@/components/cart/use-cart";
 import { useOpenCart } from "@/components/storefront/cart-drawer";
+import { notify } from "@/components/toast";
 import { resolveStorefrontHref } from "@/lib/storefront-href";
 import type { Tenant } from "@/lib/types";
 
@@ -120,13 +121,20 @@ export function StorefrontHeader({
             <MapPinIcon className="h-6 w-6" />
           </Link>
 
-          <Link
-            href={resolveStorefrontHref(subdomain, "/wishlist")}
+          <button
+            type="button"
             aria-label="My wishlist"
+            onClick={() =>
+              notify({
+                kind: "wishlist",
+                title: "My wishlist",
+                description: "Save any product by tapping the heart on it.",
+              })
+            }
             className="hidden rounded-full p-2 text-white/80 transition duration-150 hover:bg-white/10 hover:text-white sm:block"
           >
             <HeartIcon className="h-6 w-6" />
-          </Link>
+          </button>
 
           <button
             type="button"
