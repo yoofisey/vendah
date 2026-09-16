@@ -352,14 +352,7 @@ function Navbar({ isLoggedIn }: { isLoggedIn: boolean }) {
           <VenfiiLogo />
         </Link>
         <div className="flex items-center gap-3">
-          {isLoggedIn ? (
-            <Link
-              href="/dashboard"
-              className="rounded-lg bg-pine px-5 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-pine-dark"
-            >
-              Dashboard
-            </Link>
-          ) : (
+          {isLoggedIn ? null : (
             <>
               <AuthTrigger
                 mode="signin"
