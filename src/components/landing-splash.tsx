@@ -3,19 +3,11 @@
 import { useEffect, useState } from "react";
 import { VenfiiLogo } from "@/components/venfii-logo";
 
-const SPLASH_COOKIE = "venfii_splash_seen";
-
-export function LandingSplash({ show }: { show: boolean }) {
-  const [visible, setVisible] = useState(show);
+export function LandingSplash() {
+  const [visible, setVisible] = useState(true);
   const [phase, setPhase] = useState<"in" | "visible" | "out">("in");
 
   useEffect(() => {
-    if (!show) {
-      setVisible(false);
-      return;
-    }
-    document.cookie = `${SPLASH_COOKIE}=1; path=/; max-age=2592000; samesite=lax`;
-
     const t1 = setTimeout(() => setPhase("visible"), 60);
     const t2 = setTimeout(() => setPhase("out"), 2600);
     const t3 = setTimeout(() => setVisible(false), 3300);
@@ -25,7 +17,7 @@ export function LandingSplash({ show }: { show: boolean }) {
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, [show]);
+  }, []);
 
   if (!visible) return null;
 

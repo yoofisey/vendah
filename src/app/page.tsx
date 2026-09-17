@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import {
   CubeIcon,
   DevicePhoneMobileIcon,
@@ -21,7 +20,6 @@ import type { BusinessCategory } from "@/lib/types";
 
 export default async function Home() {
   const user = await getUser();
-  const splashSeen = (await cookies()).get("venfii_splash_seen")?.value === "1";
   const supabase = await createClient();
   const { data: categories } = await supabase
     .from("business_categories")
@@ -31,7 +29,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <LandingSplash show={!splashSeen} />
+      <LandingSplash />
       <AuthSheet categories={(categories as BusinessCategory[] | null) ?? []} />
       <Navbar isLoggedIn={!!user} />
 
