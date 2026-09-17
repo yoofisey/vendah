@@ -107,7 +107,7 @@ export function AuthTransitionProvider({
         >
           <div className="flex w-full max-w-sm flex-col items-center text-center">
             <div className="animate-pulse">
-              <VenfiiLogo />
+              <VenfiiLogo className="h-16 w-auto" />
             </div>
             <p className="mt-5 text-sm font-medium text-charcoal-soft animate-pulse">
               {active.message}

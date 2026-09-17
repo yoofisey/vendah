@@ -16,6 +16,7 @@
   --color-muted: #6b7280;
   --color-success: #10b981;
   --color-danger: #ef4444;
+  --color-berry: #a64153;
 
   --font-heading: var(--font-playfair), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
@@ -27,6 +28,9 @@
   --animate-sheet-in: sheet-in 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
   --animate-status-in: status-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) both;
   --animate-processing-ring: ring-spin 1.5s linear infinite;
+  --animate-wordmark-letter: wordmark-letter 0.65s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-overlay-out: overlay-out 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-fade-out: fade-out 0.4s ease-out both;
 
   @keyframes float-soft {
     0%,
@@ -85,6 +89,41 @@
   @keyframes ring-spin {
     to {
       transform: rotate(360deg);
+    }
+  }
+
+  @keyframes wordmark-letter {
+    0% {
+      opacity: 0;
+      transform: translateY(18px) rotate(4deg) scale(0.85);
+      filter: blur(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotate(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes overlay-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+      filter: blur(6px);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
     }
   }
 }
@@ -169,7 +208,10 @@ input[type="password"]::-ms-clear {
   .animate-fade-in,
   .animate-sheet-in,
   .animate-status-in,
-  .animate-processing-ring {
+  .animate-processing-ring,
+  .animate-wordmark-letter,
+  .animate-overlay-out,
+  .animate-fade-out {
     animation: none;
   }
 

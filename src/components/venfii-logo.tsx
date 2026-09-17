@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function VenfiiLogo({
   onDark = false,
   className = "",
@@ -6,21 +8,17 @@ export function VenfiiLogo({
   className?: string;
 }) {
   return (
-    <span className={`flex items-center gap-2 ${className}`}>
-      <span
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm ${
-          onDark ? "bg-white/10" : "bg-pine"
+    <span className={`inline-flex items-center ${className}`}>
+      <Image
+        src="/venfii-logo.png"
+        alt="venfii"
+        width={314}
+        height={266}
+        priority
+        className={`h-10 w-auto object-contain ${
+          onDark ? "md:drop-shadow-[0_1px_4px_rgba(255,255,255,0.35)]" : ""
         }`}
-      >
-        <span className="h-2.5 w-2.5 rounded-full bg-gold" />
-      </span>
-      <span
-        className={`font-heading text-xl font-semibold tracking-tight ${
-          onDark ? "text-white" : "text-charcoal"
-        }`}
-      >
-        venfii<span className="text-gold">.</span>
-      </span>
+      />
     </span>
   );
 }

@@ -45,7 +45,7 @@ export function LandingSplash({ show }: { show: boolean }) {
                 : "opacity-0 translate-y-4"
           }`}
         >
-          <VenfiiLogo />
+          <VenfiiLogo className="h-16 w-auto" />
         </div>
 
         <div

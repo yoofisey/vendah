@@ -31,7 +31,7 @@ export function SplashScreen({
     >
       <div className="flex flex-col items-center gap-6">
         <div className="animate-pulse">
-          <VenfiiLogo />
+          <VenfiiLogo className="h-16 w-auto" />
         </div>
         {message && (
           <p className="text-sm font-medium text-charcoal-soft animate-pulse">
